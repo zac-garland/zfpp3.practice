@@ -85,6 +85,9 @@ fit <- tourism_full %>%
 
 fc <- fit %>% forecast(h = "2 years")
 
+library(highcharter)
+fc %>% hchart("line",hcaes(Quarter,Trips,group = .model))
+
 fc %>%
   filter(is_aggregated(Region), is_aggregated(Purpose)) %>%
   autoplot(
@@ -93,6 +96,10 @@ fc %>%
   ) +
   labs(y = "Trips ('000)") +
   facet_wrap(vars(State), scales = "free_y")
+
+
+plot
+plotly::ggplotly(plot)
 
 fc %>%
   filter(is_aggregated(State), !is_aggregated(Purpose)) %>%

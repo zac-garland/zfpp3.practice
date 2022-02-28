@@ -16,7 +16,7 @@ get_retail_sales <- function(){
       gather(date, value, -(1:2)) %>%
       filter(str_length(naics_code) == 3) %>%
       mutate(
-        date = str_replace(date, ". ", " 01 ") %>% mdy(),
+        date = str_replace(date, " ", " 01 ") %>% mdy(),
         value = parse_double(as.character(value))
       ) %>%
       filter(!is.na(date), !is.na(value))
