@@ -14,4 +14,8 @@ URL: https://github.com/zac-garland/zfpp3.practice
 BugReports: https://github.com/zac-garland/zfpp3.practice/issues
 Depends: 
     fpp3,
+    highcharter,
+    R (>= 2.10),
+    tidyquant,
     tidyverse
+LazyData: true
