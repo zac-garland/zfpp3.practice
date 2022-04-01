@@ -5,7 +5,7 @@ output:
   rmdformats::downcute:
     self_contained: true
     default_style: "dark"
-    downcute_theme: "default"
+    downcute_theme: "chaos"
 editor_options: 
   chunk_output_type: console
 ---
@@ -41,13 +41,335 @@ ggplot2::theme_set(theme_minimal())
 
 
 
+# Forecasting: Principles and Practice `r tags$a(href='https://otexts.com/fpp3/./')` 
+
+
+```{r}
+
+
+library(fpp3)
+
+
+```
+# Preface `r tags$a(href='https://otexts.com/fpp3/index.html')` 
+
+
+```{r}
+
+
+library(fpp3)
+
+
+```
 
 
 
 
 
 
-# 2.7 Lag plots 
+
+
+
+
+
+# 2.1 tsibble objects `r tags$a(href='https://otexts.com/fpp3/tsibbles.html')` 
+
+
+```{r}
+
+
+y <- tsibble(
+  Year = 2015:2019,
+  Observation = c(123, 39, 78, 52, 110),
+  index = Year
+)
+z
+#> # A tibble: 5 × 2
+#>   Month    Observation
+#>   <chr>          <dbl>
+#> 1 2019 Jan          50
+#> 2 2019 Feb          23
+#> 3 2019 Mar          34
+#> 4 2019 Apr          30
+#> 5 2019 May          25
+z %>%
+  mutate(Month = yearmonth(Month)) %>%
+  as_tsibble(index = Month)
+#> # A tsibble: 5 x 2 [1M]
+#>      Month Observation
+#>      <mth>       <dbl>
+#> 1 2019 Jan          50
+#> 2 2019 Feb          23
+#> 3 2019 Mar          34
+#> 4 2019 Apr          30
+#> 5 2019 May          25
+olympic_running
+#> # A tsibble: 312 x 4 [4Y]
+#> # Key:       Length, Sex [14]
+#>     Year Length Sex    Time
+#>    <int>  <int> <chr> <dbl>
+#>  1  1896    100 men    12  
+#>  2  1900    100 men    11  
+#>  3  1904    100 men    11  
+#>  4  1908    100 men    10.8
+#>  5  1912    100 men    10.8
+#>  6  1916    100 men    NA  
+#>  7  1920    100 men    10.8
+#>  8  1924    100 men    10.6
+#>  9  1928    100 men    10.8
+#> 10  1932    100 men    10.3
+#> # … with 302 more rows
+olympic_running %>% distinct(Sex)
+#> # A tibble: 2 × 1
+#>   Sex  
+#>   <chr>
+#> 1 men  
+#> 2 women
+PBS
+#> # A tsibble: 67,596 x 9 [1M]
+#> # Key:       Concession, Type, ATC1, ATC2 [336]
+#>       Month Concession   Type    ATC1  ATC1_desc ATC2  ATC2_desc Scripts  Cost
+#>       <mth> <chr>        <chr>   <chr> <chr>     <chr> <chr>       <dbl> <dbl>
+#>  1 1991 Jul Concessional Co-pay… A     Alimenta… A01   STOMATOL…   18228 67877
+#>  2 1991 Aug Concessional Co-pay… A     Alimenta… A01   STOMATOL…   15327 57011
+#>  3 1991 Sep Concessional Co-pay… A     Alimenta… A01   STOMATOL…   14775 55020
+#>  4 1991 Oct Concessional Co-pay… A     Alimenta… A01   STOMATOL…   15380 57222
+#>  5 1991 Nov Concessional Co-pay… A     Alimenta… A01   STOMATOL…   14371 52120
+#>  6 1991 Dec Concessional Co-pay… A     Alimenta… A01   STOMATOL…   15028 54299
+#>  7 1992 Jan Concessional Co-pay… A     Alimenta… A01   STOMATOL…   11040 39753
+#>  8 1992 Feb Concessional Co-pay… A     Alimenta… A01   STOMATOL…   15165 54405
+#>  9 1992 Mar Concessional Co-pay… A     Alimenta… A01   STOMATOL…   16898 61108
+#> 10 1992 Apr Concessional Co-pay… A     Alimenta… A01   STOMATOL…   18141 65356
+#> # … with 67,586 more rows
+PBS %>%
+  filter(ATC2 == "A10")
+#> # A tsibble: 816 x 9 [1M]
+#> # Key:       Concession, Type, ATC1, ATC2 [4]
+#>       Month Concession   Type   ATC1  ATC1_desc ATC2  ATC2_desc Scripts   Cost
+#>       <mth> <chr>        <chr>  <chr> <chr>     <chr> <chr>       <dbl>  <dbl>
+#>  1 1991 Jul Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   89733 2.09e6
+#>  2 1991 Aug Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   77101 1.80e6
+#>  3 1991 Sep Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   76255 1.78e6
+#>  4 1991 Oct Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   78681 1.85e6
+#>  5 1991 Nov Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   70554 1.69e6
+#>  6 1991 Dec Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   75814 1.84e6
+#>  7 1992 Jan Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   64186 1.56e6
+#>  8 1992 Feb Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   75899 1.73e6
+#>  9 1992 Mar Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   89445 2.05e6
+#> 10 1992 Apr Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   97315 2.23e6
+#> # … with 806 more rows
+PBS %>%
+  filter(ATC2 == "A10") %>%
+  select(Month, Concession, Type, Cost)
+#> # A tsibble: 816 x 4 [1M]
+#> # Key:       Concession, Type [4]
+#>       Month Concession   Type           Cost
+#>       <mth> <chr>        <chr>         <dbl>
+#>  1 1991 Jul Concessional Co-payments 2092878
+#>  2 1991 Aug Concessional Co-payments 1795733
+#>  3 1991 Sep Concessional Co-payments 1777231
+#>  4 1991 Oct Concessional Co-payments 1848507
+#>  5 1991 Nov Concessional Co-payments 1686458
+#>  6 1991 Dec Concessional Co-payments 1843079
+#>  7 1992 Jan Concessional Co-payments 1564702
+#>  8 1992 Feb Concessional Co-payments 1732508
+#>  9 1992 Mar Concessional Co-payments 2046102
+#> 10 1992 Apr Concessional Co-payments 2225977
+#> # … with 806 more rows
+PBS %>%
+  filter(ATC2 == "A10") %>%
+  select(Month, Concession, Type, Cost) %>%
+  summarise(TotalC = sum(Cost))
+#> # A tsibble: 204 x 2 [1M]
+#>       Month  TotalC
+#>       <mth>   <dbl>
+#>  1 1991 Jul 3526591
+#>  2 1991 Aug 3180891
+#>  3 1991 Sep 3252221
+#>  4 1991 Oct 3611003
+#>  5 1991 Nov 3565869
+#>  6 1991 Dec 4306371
+#>  7 1992 Jan 5088335
+#>  8 1992 Feb 2814520
+#>  9 1992 Mar 2985811
+#> 10 1992 Apr 3204780
+#> # … with 194 more rows
+PBS %>%
+  filter(ATC2 == "A10") %>%
+  select(Month, Concession, Type, Cost) %>%
+  summarise(TotalC = sum(Cost)) %>%
+  mutate(Cost = TotalC/1e6)
+#> # A tsibble: 204 x 3 [1M]
+#>       Month  TotalC  Cost
+#>       <mth>   <dbl> <dbl>
+#>  1 1991 Jul 3526591  3.53
+#>  2 1991 Aug 3180891  3.18
+#>  3 1991 Sep 3252221  3.25
+#>  4 1991 Oct 3611003  3.61
+#>  5 1991 Nov 3565869  3.57
+#>  6 1991 Dec 4306371  4.31
+#>  7 1992 Jan 5088335  5.09
+#>  8 1992 Feb 2814520  2.81
+#>  9 1992 Mar 2985811  2.99
+#> 10 1992 Apr 3204780  3.20
+#> # … with 194 more rows
+PBS %>%
+  filter(ATC2 == "A10") %>%
+  select(Month, Concession, Type, Cost) %>%
+  summarise(TotalC = sum(Cost)) %>%
+  mutate(Cost = TotalC / 1e6) -> a10
+prison <- readr::read_csv("https://OTexts.com/fpp3/extrafiles/prison_population.csv")
+prison <- prison %>%
+  mutate(Quarter = yearquarter(Date)) %>%
+  select(-Date) %>%
+  as_tsibble(key = c(State, Gender, Legal, Indigenous),
+             index = Quarter)
+
+prison
+#> # A tsibble: 3,072 x 6 [1Q]
+#> # Key:       State, Gender, Legal, Indigenous [64]
+#>    State Gender Legal    Indigenous Count Quarter
+#>    <chr> <chr>  <chr>    <chr>      <dbl>   <qtr>
+#>  1 ACT   Female Remanded ATSI           0 2005 Q1
+#>  2 ACT   Female Remanded ATSI           1 2005 Q2
+#>  3 ACT   Female Remanded ATSI           0 2005 Q3
+#>  4 ACT   Female Remanded ATSI           0 2005 Q4
+#>  5 ACT   Female Remanded ATSI           1 2006 Q1
+#>  6 ACT   Female Remanded ATSI           1 2006 Q2
+#>  7 ACT   Female Remanded ATSI           1 2006 Q3
+#>  8 ACT   Female Remanded ATSI           0 2006 Q4
+#>  9 ACT   Female Remanded ATSI           0 2007 Q1
+#> 10 ACT   Female Remanded ATSI           1 2007 Q2
+#> # … with 3,062 more rows
+
+
+```
+# 2.2 Time plots `r tags$a(href='https://otexts.com/fpp3/time-plots.html')` 
+
+
+```{r}
+
+
+melsyd_economy <- ansett %>%
+  filter(Airports == "MEL-SYD", Class == "Economy") %>%
+  mutate(Passengers = Passengers/1000)
+autoplot(melsyd_economy, Passengers) +
+  labs(title = "Ansett airlines economy class",
+       subtitle = "Melbourne-Sydney",
+       y = "Passengers ('000)")
+autoplot(a10, Cost) +
+  labs(y = "$ (millions)",
+       title = "Australian antidiabetic drug sales")
+
+
+```
+
+# 2.4 Seasonal plots `r tags$a(href='https://otexts.com/fpp3/seasonal-plots.html')` 
+
+
+```{r}
+
+
+a10 %>%
+  gg_season(Cost, labels = "both") +
+  labs(y = "$ (millions)",
+       title = "Seasonal plot: Antidiabetic drug sales")
+vic_elec %>% gg_season(Demand, period = "day") +
+  theme(legend.position = "none") +
+  labs(y="MWh", title="Electricity demand: Victoria")
+vic_elec %>% gg_season(Demand, period = "week") +
+  theme(legend.position = "none") +
+  labs(y="MWh", title="Electricity demand: Victoria")
+vic_elec %>% gg_season(Demand, period = "year") +
+  labs(y="MWh", title="Electricity demand: Victoria")
+
+
+```
+# 2.5 Seasonal subseries plots `r tags$a(href='https://otexts.com/fpp3/subseries.html')` 
+
+
+```{r}
+
+
+a10 %>%
+  gg_subseries(Cost) +
+  labs(
+    y = "$ (millions)",
+    title = "Australian antidiabetic drug sales"
+  )
+holidays <- tourism %>%
+  filter(Purpose == "Holiday") %>%
+  group_by(State) %>%
+  summarise(Trips = sum(Trips))
+holidays
+#> # A tsibble: 640 x 3 [1Q]
+#> # Key:       State [8]
+#>    State Quarter Trips
+#>    <chr>   <qtr> <dbl>
+#>  1 ACT   1998 Q1  196.
+#>  2 ACT   1998 Q2  127.
+#>  3 ACT   1998 Q3  111.
+#>  4 ACT   1998 Q4  170.
+#>  5 ACT   1999 Q1  108.
+#>  6 ACT   1999 Q2  125.
+#>  7 ACT   1999 Q3  178.
+#>  8 ACT   1999 Q4  218.
+#>  9 ACT   2000 Q1  158.
+#> 10 ACT   2000 Q2  155.
+#> # … with 630 more rows
+autoplot(holidays, Trips) +
+  labs(y = "Overnight trips ('000)",
+       title = "Australian domestic holidays")
+gg_season(holidays, Trips) +
+  labs(y = "Overnight trips ('000)",
+       title = "Australian domestic holidays")
+holidays %>%
+  gg_subseries(Trips) +
+  labs(y = "Overnight trips ('000)",
+       title = "Australian domestic holidays")
+
+
+```
+# 2.6 Scatterplots `r tags$a(href='https://otexts.com/fpp3/scatterplots.html')` 
+
+
+```{r}
+
+
+vic_elec %>%
+  filter(year(Time) == 2014) %>%
+  autoplot(Demand) +
+  labs(y = "GW",
+       title = "Half-hourly electricity demand: Victoria")
+vic_elec %>%
+  filter(year(Time) == 2014) %>%
+  autoplot(Temperature) +
+  labs(
+    y = "Degrees Celsius",
+    title = "Half-hourly temperatures: Melbourne, Australia"
+  )
+vic_elec %>%
+  filter(year(Time) == 2014) %>%
+  ggplot(aes(x = Temperature, y = Demand)) +
+  geom_point() +
+  labs(x = "Temperature (degrees Celsius)",
+       y = "Electricity demand (GW)")
+visitors <- tourism %>%
+  group_by(State) %>%
+  summarise(Trips = sum(Trips))
+visitors %>%
+  ggplot(aes(x = Quarter, y = Trips)) +
+  geom_line() +
+  facet_grid(vars(State), scales = "free_y") +
+  labs(title = "Australian domestic tourism",
+       y= "Overnight trips ('000)")
+visitors %>%
+  pivot_wider(values_from=Trips, names_from=State) %>%
+  GGally::ggpairs(columns = 2:9)
+
+
+```
+# 2.7 Lag plots `r tags$a(href='https://otexts.com/fpp3/lag-plots.html')` 
 
 
 ```{r}
@@ -61,21 +383,36 @@ recent_production %>%
 
 
 ```
-
-# 2.8 Autocorrelation 
+# 2.8 Autocorrelation `r tags$a(href='https://otexts.com/fpp3/acf.html')` 
 
 
 ```{r}
 
 
 recent_production %>% ACF(Beer, lag_max = 9)
+#> # A tsibble: 9 x 2 [1Q]
+#>     lag      acf
+#>   <lag>    <dbl>
+#> 1    1Q -0.0530 
+#> 2    2Q -0.758  
+#> 3    3Q -0.0262 
+#> 4    4Q  0.802  
+#> 5    5Q -0.0775 
+#> 6    6Q -0.657  
+#> 7    7Q  0.00119
+#> 8    8Q  0.707  
+#> 9    9Q -0.0888
 recent_production %>%
   ACF(Beer) %>%
-  autoplot() + labs(title = "Australian beer production")
+  autoplot() + labs(title="Australian beer production")
+a10 %>%
+  ACF(Cost, lag_max = 48) %>%
+  autoplot() +
+  labs(title="Australian antidiabetic drug sales")
+
 
 ```
-
-# 2.9 White noise 
+# 2.9 White noise `r tags$a(href='https://otexts.com/fpp3/wn.html')` 
 
 
 ```{r}
@@ -90,8 +427,36 @@ y %>%
 
 
 ```
+# 2.10 Exercises `r tags$a(href='https://otexts.com/fpp3/graphics-exercises.html')` 
 
-# 3.1 Transformations and adjustments 
+
+```{r}
+
+
+tute1 <- readr::read_csv("tute1.csv")
+View(tute1)
+mytimeseries <- tute1 %>%
+  mutate(Quarter = yearmonth(Quarter)) %>%
+  as_tsibble(index = Quarter)
+mytimeseries %>%
+  pivot_longer(-Quarter) %>%
+  ggplot(aes(x = Quarter, y = value, colour = name)) +
+  geom_line() +
+  facet_grid(name ~ ., scales = "free_y")
+set.seed(12345678)
+myseries <- aus_retail %>%
+  filter(`Series ID` == sample(aus_retail$`Series ID`,1))
+dgoog <- gafa_stock %>%
+  filter(Symbol == "GOOG", year(Date) >= 2018) %>%
+  mutate(trading_day = row_number()) %>%
+  update_tsibble(index = trading_day, regular = TRUE) %>%
+  mutate(diff = difference(Close))
+
+
+```
+
+
+# 3.1 Transformations and adjustments `r tags$a(href='https://otexts.com/fpp3/transformations.html')` 
 
 
 ```{r}
@@ -99,8 +464,8 @@ y %>%
 
 global_economy %>%
   filter(Country == "Australia") %>%
-  autoplot(GDP / Population) +
-  labs(title = "GDP per capita", y = "$US")
+  autoplot(GDP/Population) +
+  labs(title= "GDP per capita", y = "$US")
 print_retail <- aus_retail %>%
   filter(Industry == "Newspaper and book retailing") %>%
   group_by(Industry) %>%
@@ -112,33 +477,27 @@ print_retail %>%
   left_join(aus_economy, by = "Year") %>%
   mutate(Adjusted_turnover = Turnover / CPI * 100) %>%
   pivot_longer(c(Turnover, Adjusted_turnover),
-    values_to = "Turnover"
-  ) %>%
+               values_to = "Turnover") %>%
   mutate(name = factor(name,
-    levels = c("Turnover", "Adjusted_turnover")
-  )) %>%
+         levels=c("Turnover","Adjusted_turnover"))) %>%
   ggplot(aes(x = Year, y = Turnover)) +
   geom_line() +
   facet_grid(name ~ ., scales = "free_y") +
-  labs(
-    title = "Turnover: Australian print media industry",
-    y = "$AU"
-  )
+  labs(title = "Turnover: Australian print media industry",
+       y = "$AU")
 lambda <- aus_production %>%
   features(Gas, features = guerrero) %>%
   pull(lambda_guerrero)
 aus_production %>%
   autoplot(box_cox(Gas, lambda)) +
-  labs(
-    y = "",
-    title = latex2exp::TeX(paste0(
-      "Transformed gas production with $\\lambda$ = ",
-      round(lambda, 2)
-    ))
-  )
-```
+  labs(y = "",
+       title = latex2exp::TeX(paste0(
+         "Transformed gas production with $\\lambda$ = ",
+         round(lambda,2))))
 
-# 3.2 Time series components 
+
+```
+# 3.2 Time series components `r tags$a(href='https://otexts.com/fpp3/components.html')` 
 
 
 ```{r}
@@ -148,17 +507,31 @@ us_retail_employment <- us_employment %>%
   filter(year(Month) >= 1990, Title == "Retail Trade") %>%
   select(-Series_ID)
 autoplot(us_retail_employment, Employed) +
-  labs(
-    y = "Persons (thousands)",
-    title = "Total employment in US retail"
-  )
+  labs(y = "Persons (thousands)",
+       title = "Total employment in US retail")
 dcmp <- us_retail_employment %>%
   model(stl = STL(Employed))
 components(dcmp)
+#> # A dable: 357 x 7 [1M]
+#> # Key:     .model [1]
+#> # :        Employed = trend + season_year + remainder
+#>    .model    Month Employed  trend season_year remainder season_adjust
+#>    <chr>     <mth>    <dbl>  <dbl>       <dbl>     <dbl>         <dbl>
+#>  1 stl    1990 Jan   13256. 13288.      -33.0      0.836        13289.
+#>  2 stl    1990 Feb   12966. 13269.     -258.     -44.6          13224.
+#>  3 stl    1990 Mar   12938. 13250.     -290.     -22.1          13228.
+#>  4 stl    1990 Apr   13012. 13231.     -220.       1.05         13232.
+#>  5 stl    1990 May   13108. 13211.     -114.      11.3          13223.
+#>  6 stl    1990 Jun   13183. 13192.      -24.3     15.5          13207.
+#>  7 stl    1990 Jul   13170. 13172.      -23.2     21.6          13193.
+#>  8 stl    1990 Aug   13160. 13151.       -9.52    17.8          13169.
+#>  9 stl    1990 Sep   13113. 13131.      -39.5     22.0          13153.
+#> 10 stl    1990 Oct   13185. 13110.       61.6     13.2          13124.
+#> # … with 347 more rows
 components(dcmp) %>%
   as_tsibble() %>%
-  autoplot(Employed, colour = "gray") +
-  geom_line(aes(y = trend), colour = "#D55E00") +
+  autoplot(Employed, colour="gray") +
+  geom_line(aes(y=trend), colour = "#D55E00") +
   labs(
     y = "Persons (thousands)",
     title = "Total employment in US retail"
@@ -167,14 +540,13 @@ components(dcmp) %>% autoplot()
 components(dcmp) %>%
   as_tsibble() %>%
   autoplot(Employed, colour = "gray") +
-  geom_line(aes(y = season_adjust), colour = "#0072B2") +
-  labs(
-    y = "Persons (thousands)",
-    title = "Total employment in US retail"
-  )
-```
+  geom_line(aes(y=season_adjust), colour = "#0072B2") +
+  labs(y = "Persons (thousands)",
+       title = "Total employment in US retail")
 
-# 3.3 Moving averages 
+
+```
+# 3.3 Moving averages `r tags$a(href='https://otexts.com/fpp3/moving-averages.html')` 
 
 
 ```{r}
@@ -188,16 +560,13 @@ aus_exports <- global_economy %>%
   filter(Country == "Australia") %>%
   mutate(
     `5-MA` = slider::slide_dbl(Exports, mean,
-      .before = 2, .after = 2, .complete = TRUE
-    )
+                .before = 2, .after = 2, .complete = TRUE)
   )
 aus_exports %>%
   autoplot(Exports) +
   geom_line(aes(y = `5-MA`), colour = "#D55E00") +
-  labs(
-    y = "% of GDP",
-    title = "Total Australian exports"
-  ) +
+  labs(y = "% of GDP",
+       title = "Total Australian exports") +
   guides(colour = guide_legend(title = "series"))
 beer <- aus_production %>%
   filter(year(Quarter) >= 1992) %>%
@@ -205,31 +574,26 @@ beer <- aus_production %>%
 beer_ma <- beer %>%
   mutate(
     `4-MA` = slider::slide_dbl(Beer, mean,
-      .before = 1, .after = 2, .complete = TRUE
-    ),
+                .before = 1, .after = 2, .complete = TRUE),
     `2x4-MA` = slider::slide_dbl(`4-MA`, mean,
-      .before = 1, .after = 0, .complete = TRUE
-    )
+                .before = 1, .after = 0, .complete = TRUE)
   )
 us_retail_employment_ma <- us_retail_employment %>%
   mutate(
     `12-MA` = slider::slide_dbl(Employed, mean,
-      .before = 5, .after = 6, .complete = TRUE
-    ),
+                .before = 5, .after = 6, .complete = TRUE),
     `2x12-MA` = slider::slide_dbl(`12-MA`, mean,
-      .before = 1, .after = 0, .complete = TRUE
-    )
+                .before = 1, .after = 0, .complete = TRUE)
   )
 us_retail_employment_ma %>%
   autoplot(Employed, colour = "gray") +
   geom_line(aes(y = `2x12-MA`), colour = "#D55E00") +
-  labs(
-    y = "Persons (thousands)",
-    title = "Total employment in US retail"
-  )
-```
+  labs(y = "Persons (thousands)",
+       title = "Total employment in US retail")
 
-# 3.4 Classical decomposition 
+
+```
+# 3.4 Classical decomposition `r tags$a(href='https://otexts.com/fpp3/classical-decomposition.html')` 
 
 
 ```{r}
@@ -246,8 +610,7 @@ us_retail_employment %>%
 
 
 ```
-
-# 3.5 Methods used by official statistics agencies 
+# 3.5 Methods used by official statistics agencies `r tags$a(href='https://otexts.com/fpp3/methods-used-by-official-statistics-agencies.html')` 
 
 
 ```{r}
@@ -257,22 +620,16 @@ x11_dcmp <- us_retail_employment %>%
   model(x11 = X_13ARIMA_SEATS(Employed ~ x11())) %>%
   components()
 autoplot(x11_dcmp) +
-  labs(
-    title =
-      "Decomposition of total US retail employment using X-11."
-  )
+  labs(title =
+    "Decomposition of total US retail employment using X-11.")
 x11_dcmp %>%
   ggplot(aes(x = Month)) +
   geom_line(aes(y = Employed, colour = "Data")) +
-  geom_line(aes(
-    y = season_adjust,
-    colour = "Seasonally Adjusted"
-  )) +
+  geom_line(aes(y = season_adjust,
+                colour = "Seasonally Adjusted")) +
   geom_line(aes(y = trend, colour = "Trend")) +
-  labs(
-    y = "Persons (thousands)",
-    title = "Total employment in US retail"
-  ) +
+  labs(y = "Persons (thousands)",
+       title = "Total employment in US retail") +
   scale_colour_manual(
     values = c("gray", "#0072B2", "#D55E00"),
     breaks = c("Data", "Seasonally Adjusted", "Trend")
@@ -283,13 +640,12 @@ seats_dcmp <- us_retail_employment %>%
   model(seats = X_13ARIMA_SEATS(Employed ~ seats())) %>%
   components()
 autoplot(seats_dcmp) +
-  labs(
-    title =
-      "Decomposition of total US retail employment using SEATS"
-  )
-```
+  labs(title =
+    "Decomposition of total US retail employment using SEATS")
 
-# 3.6 STL decomposition 
+
+```
+# 3.6 STL decomposition `r tags$a(href='https://otexts.com/fpp3/stl.html')` 
 
 
 ```{r}
@@ -298,15 +654,26 @@ autoplot(seats_dcmp) +
 us_retail_employment %>%
   model(
     STL(Employed ~ trend(window = 7) +
-      season(window = "periodic"),
-    robust = TRUE
-    )
-  ) %>%
+                   season(window = "periodic"),
+    robust = TRUE)) %>%
   components() %>%
   autoplot()
+
+
+```
+# 3.7 Exercises `r tags$a(href='https://otexts.com/fpp3/decomposition-exercises.html')` 
+
+
+```{r}
+
+
+gas <- tail(aus_production, 5*4) %>% select(Gas)
+
+
 ```
 
-# 4.1 Some simple statistics 
+
+# 4.1 Some simple statistics `r tags$a(href='https://otexts.com/fpp3/some-simple-statistics.html')` 
 
 
 ```{r}
@@ -315,23 +682,64 @@ us_retail_employment %>%
 tourism %>%
   features(Trips, list(mean = mean)) %>%
   arrange(mean)
+#> # A tibble: 304 × 4
+#>    Region          State              Purpose   mean
+#>    <chr>           <chr>              <chr>    <dbl>
+#>  1 Kangaroo Island South Australia    Other    0.340
+#>  2 MacDonnell      Northern Territory Other    0.449
+#>  3 Wilderness West Tasmania           Other    0.478
+#>  4 Barkly          Northern Territory Other    0.632
+#>  5 Clare Valley    South Australia    Other    0.898
+#>  6 Barossa         South Australia    Other    1.02 
+#>  7 Kakadu Arnhem   Northern Territory Other    1.04 
+#>  8 Lasseter        Northern Territory Other    1.14 
+#>  9 Wimmera         Victoria           Other    1.15 
+#> 10 MacDonnell      Northern Territory Visiting 1.18 
+#> # … with 294 more rows
 tourism %>% features(Trips, quantile)
+#> # A tibble: 304 × 8
+#>    Region         State           Purpose    `0%`  `25%`   `50%`  `75%` `100%`
+#>    <chr>          <chr>           <chr>     <dbl>  <dbl>   <dbl>  <dbl>  <dbl>
+#>  1 Adelaide       South Australia Busine…  68.7   134.   153.    177.   242.  
+#>  2 Adelaide       South Australia Holiday 108.    135.   154.    172.   224.  
+#>  3 Adelaide       South Australia Other    25.9    43.9   53.8    62.5  107.  
+#>  4 Adelaide       South Australia Visiti… 137.    179.   206.    229.   270.  
+#>  5 Adelaide Hills South Australia Busine…   0       0      1.26    3.92  28.6 
+#>  6 Adelaide Hills South Australia Holiday   0       5.77   8.52   14.1   35.8 
+#>  7 Adelaide Hills South Australia Other     0       0      0.908   2.09   8.95
+#>  8 Adelaide Hills South Australia Visiti…   0.778   8.91  12.2    16.8   81.1 
+#>  9 Alice Springs  Northern Terri… Busine…   1.01    9.13  13.3    18.5   34.1 
+#> 10 Alice Springs  Northern Terri… Holiday   2.81   16.9   31.5    44.8   76.5 
+#> # … with 294 more rows
 
 
 ```
-
-# 4.2 ACF features 
+# 4.2 ACF features `r tags$a(href='https://otexts.com/fpp3/acf-features.html')` 
 
 
 ```{r}
 
 
 tourism %>% features(Trips, feat_acf)
+#> # A tibble: 304 × 10
+#>    Region       State Purpose     acf1 acf10 diff1_acf1 diff1_acf10 diff2_acf1
+#>    <chr>        <chr> <chr>      <dbl> <dbl>      <dbl>       <dbl>      <dbl>
+#>  1 Adelaide     Sout… Busine…  0.0333  0.131     -0.520       0.463     -0.676
+#>  2 Adelaide     Sout… Holiday  0.0456  0.372     -0.343       0.614     -0.487
+#>  3 Adelaide     Sout… Other    0.517   1.15      -0.409       0.383     -0.675
+#>  4 Adelaide     Sout… Visiti…  0.0684  0.294     -0.394       0.452     -0.518
+#>  5 Adelaide Hi… Sout… Busine…  0.0709  0.134     -0.580       0.415     -0.750
+#>  6 Adelaide Hi… Sout… Holiday  0.131   0.313     -0.536       0.500     -0.716
+#>  7 Adelaide Hi… Sout… Other    0.261   0.330     -0.253       0.317     -0.457
+#>  8 Adelaide Hi… Sout… Visiti…  0.139   0.117     -0.472       0.239     -0.626
+#>  9 Alice Sprin… Nort… Busine…  0.217   0.367     -0.500       0.381     -0.658
+#> 10 Alice Sprin… Nort… Holiday -0.00660 2.11      -0.153       2.11      -0.274
+#> # … with 294 more rows, and 2 more variables: diff2_acf10 <dbl>,
+#> #   season_acf1 <dbl>
 
 
 ```
-
-# 4.3 STL Features 
+# 4.3 STL Features `r tags$a(href='https://otexts.com/fpp3/stlfeatures.html')` 
 
 
 ```{r}
@@ -339,12 +747,26 @@ tourism %>% features(Trips, feat_acf)
 
 tourism %>%
   features(Trips, feat_stl)
+#> # A tibble: 304 × 12
+#>    Region       State Purpose trend_strength seasonal_streng… seasonal_peak_y…
+#>    <chr>        <chr> <chr>            <dbl>            <dbl>            <dbl>
+#>  1 Adelaide     Sout… Busine…          0.464            0.407                3
+#>  2 Adelaide     Sout… Holiday          0.554            0.619                1
+#>  3 Adelaide     Sout… Other            0.746            0.202                2
+#>  4 Adelaide     Sout… Visiti…          0.435            0.452                1
+#>  5 Adelaide Hi… Sout… Busine…          0.464            0.179                3
+#>  6 Adelaide Hi… Sout… Holiday          0.528            0.296                2
+#>  7 Adelaide Hi… Sout… Other            0.593            0.404                2
+#>  8 Adelaide Hi… Sout… Visiti…          0.488            0.254                0
+#>  9 Alice Sprin… Nort… Busine…          0.534            0.251                0
+#> 10 Alice Sprin… Nort… Holiday          0.381            0.832                3
+#> # … with 294 more rows, and 6 more variables: seasonal_trough_year <dbl>,
+#> #   spikiness <dbl>, linearity <dbl>, curvature <dbl>, stl_e_acf1 <dbl>,
+#> #   stl_e_acf10 <dbl>
 tourism %>%
   features(Trips, feat_stl) %>%
-  ggplot(aes(
-    x = trend_strength, y = seasonal_strength_year,
-    col = Purpose
-  )) +
+  ggplot(aes(x = trend_strength, y = seasonal_strength_year,
+             col = Purpose)) +
   geom_point() +
   facet_wrap(vars(State))
 tourism %>%
@@ -356,9 +778,11 @@ tourism %>%
   ggplot(aes(x = Quarter, y = Trips)) +
   geom_line() +
   facet_grid(vars(State, Region, Purpose))
+
+
 ```
 
-# 4.5 Exploring Australian tourism data 
+# 4.5 Exploring Australian tourism data `r tags$a(href='https://otexts.com/fpp3/exploring-australian-tourism-data.html')` 
 
 
 ```{r}
@@ -367,14 +791,34 @@ tourism %>%
 tourism_features <- tourism %>%
   features(Trips, feature_set(pkgs = "feasts"))
 tourism_features
+#> # A tibble: 304 × 51
+#>    Region       State Purpose trend_strength seasonal_streng… seasonal_peak_y…
+#>    <chr>        <chr> <chr>            <dbl>            <dbl>            <dbl>
+#>  1 Adelaide     Sout… Busine…          0.464            0.407                3
+#>  2 Adelaide     Sout… Holiday          0.554            0.619                1
+#>  3 Adelaide     Sout… Other            0.746            0.202                2
+#>  4 Adelaide     Sout… Visiti…          0.435            0.452                1
+#>  5 Adelaide Hi… Sout… Busine…          0.464            0.179                3
+#>  6 Adelaide Hi… Sout… Holiday          0.528            0.296                2
+#>  7 Adelaide Hi… Sout… Other            0.593            0.404                2
+#>  8 Adelaide Hi… Sout… Visiti…          0.488            0.254                0
+#>  9 Alice Sprin… Nort… Busine…          0.534            0.251                0
+#> 10 Alice Sprin… Nort… Holiday          0.381            0.832                3
+#> # … with 294 more rows, and 45 more variables: seasonal_trough_year <dbl>,
+#> #   spikiness <dbl>, linearity <dbl>, curvature <dbl>, stl_e_acf1 <dbl>,
+#> #   stl_e_acf10 <dbl>, acf1 <dbl>, acf10 <dbl>, diff1_acf1 <dbl>,
+#> #   diff1_acf10 <dbl>, diff2_acf1 <dbl>, diff2_acf10 <dbl>,
+#> #   season_acf1 <dbl>, pacf5 <dbl>, diff1_pacf5 <dbl>, diff2_pacf5 <dbl>,
+#> #   season_pacf <dbl>, zero_run_mean <dbl>, nonzero_squared_cv <dbl>,
+#> #   zero_start_prop <dbl>, zero_end_prop <dbl>, lambda_guerrero <dbl>, …
 library(glue)
 tourism_features %>%
   select_at(vars(contains("season"), Purpose)) %>%
   mutate(
     seasonal_peak_year = seasonal_peak_year +
-      4 * (seasonal_peak_year == 0),
+      4*(seasonal_peak_year==0),
     seasonal_trough_year = seasonal_trough_year +
-      4 * (seasonal_trough_year == 0),
+      4*(seasonal_trough_year==0),
     seasonal_peak_year = glue("Q{seasonal_peak_year}"),
     seasonal_trough_year = glue("Q{seasonal_trough_year}"),
   ) %>%
@@ -392,22 +836,30 @@ outliers <- pcs %>%
   filter(.fittedPC1 > 10) %>%
   select(Region, State, Purpose, .fittedPC1, .fittedPC2)
 outliers
+#> # A tibble: 4 × 5
+#>   Region                 State             Purpose  .fittedPC1 .fittedPC2
+#>   <chr>                  <chr>             <chr>         <dbl>      <dbl>
+#> 1 Australia's North West Western Australia Business       13.4    -11.3  
+#> 2 Australia's South West Western Australia Holiday        10.9      0.880
+#> 3 Melbourne              Victoria          Holiday        12.3    -10.4  
+#> 4 South Coast            New South Wales   Holiday        11.9      9.42
 outliers %>%
   left_join(tourism, by = c("State", "Region", "Purpose")) %>%
   mutate(
     Series = glue("{State}", "{Region}", "{Purpose}",
-      .sep = "\n\n"
-    )
+                  .sep = "\n\n")
   ) %>%
   ggplot(aes(x = Quarter, y = Trips)) +
   geom_line() +
   facet_grid(Series ~ ., scales = "free") +
   labs(title = "Outlying time series in PC space")
+
+
 ```
 
 
 
-# 5.1 A tidy forecasting workflow 
+# 5.1 A tidy forecasting workflow `r tags$a(href='https://otexts.com/fpp3/a-tidy-forecasting-workflow.html')` 
 
 
 ```{r}
@@ -419,19 +871,50 @@ gdppc %>%
   filter(Country == "Sweden") %>%
   autoplot(GDP_per_capita) +
   labs(y = "$US", title = "GDP per capita for Sweden")
-TSLM(GDP_per_capita ~ trend())
+TSLM(GDP_per_capita ~ trend()).
 fit <- gdppc %>%
   model(trend_model = TSLM(GDP_per_capita ~ trend()))
 fit
+#> # A mable: 263 x 2
+#> # Key:     Country [263]
+#>    Country             trend_model
+#>    <fct>                   <model>
+#>  1 Afghanistan              <TSLM>
+#>  2 Albania                  <TSLM>
+#>  3 Algeria                  <TSLM>
+#>  4 American Samoa           <TSLM>
+#>  5 Andorra                  <TSLM>
+#>  6 Angola                   <TSLM>
+#>  7 Antigua and Barbuda      <TSLM>
+#>  8 Arab World               <TSLM>
+#>  9 Argentina                <TSLM>
+#> 10 Armenia                  <TSLM>
+#> # … with 253 more rows
 fit %>% forecast(h = "3 years")
+#> # A fable: 789 x 5 [1Y]
+#> # Key:     Country, .model [263]
+#>    Country        .model       Year   GDP_per_capita  .mean
+#>    <fct>          <chr>       <dbl>           <dist>  <dbl>
+#>  1 Afghanistan    trend_model  2018     N(526, 9653)   526.
+#>  2 Afghanistan    trend_model  2019     N(534, 9689)   534.
+#>  3 Afghanistan    trend_model  2020     N(542, 9727)   542.
+#>  4 Albania        trend_model  2018  N(4716, 476419)  4716.
+#>  5 Albania        trend_model  2019  N(4867, 481086)  4867.
+#>  6 Albania        trend_model  2020  N(5018, 486012)  5018.
+#>  7 Algeria        trend_model  2018  N(4410, 643094)  4410.
+#>  8 Algeria        trend_model  2019  N(4489, 645311)  4489.
+#>  9 Algeria        trend_model  2020  N(4568, 647602)  4568.
+#> 10 American Samoa trend_model  2018 N(12491, 652926) 12491.
+#> # … with 779 more rows
 fit %>%
   forecast(h = "3 years") %>%
   filter(Country == "Sweden") %>%
   autoplot(gdppc) +
   labs(y = "$US", title = "GDP per capita for Sweden")
-```
 
-# 5.2 Some simple forecasting methods 
+
+```
+# 5.2 Some simple forecasting methods `r tags$a(href='https://otexts.com/fpp3/simple-methods.html')` 
 
 
 ```{r}
@@ -491,41 +974,53 @@ google_fc <- google_fit %>%
 google_fc %>%
   autoplot(google_2015, level = NULL) +
   autolayer(google_jan_2016, Close, colour = "black") +
-  labs(
-    y = "$US",
-    title = "Google daily closing stock prices",
-    subtitle = "(Jan 2015 - Jan 2016)"
-  ) +
+  labs(y = "$US",
+       title = "Google daily closing stock prices",
+       subtitle = "(Jan 2015 - Jan 2016)") +
   guides(colour = guide_legend(title = "Forecast"))
-```
 
-# 5.3 Fitted values and residuals 
+
+```
+# 5.3 Fitted values and residuals `r tags$a(href='https://otexts.com/fpp3/residuals.html')` 
 
 
 ```{r}
 
 
 augment(beer_fit)
+#> # A tsibble: 180 x 6 [1Q]
+#> # Key:       .model [3]
+#>    .model Quarter  Beer .fitted .resid .innov
+#>    <chr>    <qtr> <dbl>   <dbl>  <dbl>  <dbl>
+#>  1 Mean   1992 Q1   443    436.   6.55   6.55
+#>  2 Mean   1992 Q2   410    436. -26.4  -26.4 
+#>  3 Mean   1992 Q3   420    436. -16.4  -16.4 
+#>  4 Mean   1992 Q4   532    436.  95.6   95.6 
+#>  5 Mean   1993 Q1   433    436.  -3.45  -3.45
+#>  6 Mean   1993 Q2   421    436. -15.4  -15.4 
+#>  7 Mean   1993 Q3   410    436. -26.4  -26.4 
+#>  8 Mean   1993 Q4   512    436.  75.6   75.6 
+#>  9 Mean   1994 Q1   449    436.  12.6   12.6 
+#> 10 Mean   1994 Q2   381    436. -55.4  -55.4 
+#> # … with 170 more rows
+
+
 ```
-# 5.4 Residual diagnostics 
+# 5.4 Residual diagnostics `r tags$a(href='https://otexts.com/fpp3/diagnostics.html')` 
 
 
 ```{r}
 
 
 autoplot(google_2015, Close) +
-  labs(
-    y = "$US",
-    title = "Google daily closing stock prices in 2015"
-  )
+  labs(y = "$US",
+       title = "Google daily closing stock prices in 2015")
 aug <- google_2015 %>%
   model(NAIVE(Close)) %>%
   augment()
 autoplot(aug, .innov) +
-  labs(
-    y = "$US",
-    title = "Residuals from the naïve method"
-  )
+  labs(y = "$US",
+       title = "Residuals from the naïve method")
 aug %>%
   ggplot(aes(x = .innov)) +
   geom_histogram() +
@@ -538,14 +1033,31 @@ google_2015 %>%
   model(NAIVE(Close)) %>%
   gg_tsresiduals()
 aug %>% features(.innov, box_pierce, lag = 10, dof = 0)
+#> # A tibble: 1 × 4
+#>   Symbol .model       bp_stat bp_pvalue
+#>   <chr>  <chr>          <dbl>     <dbl>
+#> 1 GOOG   NAIVE(Close)    7.74     0.654
 
 aug %>% features(.innov, ljung_box, lag = 10, dof = 0)
+#> # A tibble: 1 × 4
+#>   Symbol .model       lb_stat lb_pvalue
+#>   <chr>  <chr>          <dbl>     <dbl>
+#> 1 GOOG   NAIVE(Close)    7.91     0.637
 fit <- google_2015 %>% model(RW(Close ~ drift()))
 tidy(fit)
-augment(fit) %>% features(.innov, ljung_box, lag = 10, dof = 1)
-```
+#> # A tibble: 1 × 7
+#>   Symbol .model              term  estimate std.error statistic p.value
+#>   <chr>  <chr>               <chr>    <dbl>     <dbl>     <dbl>   <dbl>
+#> 1 GOOG   RW(Close ~ drift()) b        0.944     0.705      1.34   0.182
+augment(fit) %>% features(.innov, ljung_box, lag=10, dof=1)
+#> # A tibble: 1 × 4
+#>   Symbol .model              lb_stat lb_pvalue
+#>   <chr>  <chr>                 <dbl>     <dbl>
+#> 1 GOOG   RW(Close ~ drift())    7.91     0.543
 
-# 5.5 Distributional forecasts and prediction intervals 
+
+```
+# 5.5 Distributional forecasts and prediction intervals `r tags$a(href='https://otexts.com/fpp3/prediction-intervals.html')` 
 
 
 ```{r}
@@ -555,34 +1067,92 @@ google_2015 %>%
   model(NAIVE(Close)) %>%
   forecast(h = 10) %>%
   hilo()
+#> # A tsibble: 10 x 7 [1]
+#> # Key:       Symbol, .model [1]
+#>    Symbol .model      day        Close .mean            `80%`            `95%`
+#>    <chr>  <chr>     <dbl>       <dist> <dbl>           <hilo>           <hilo>
+#>  1 GOOG   NAIVE(Cl…   253  N(759, 125)  759. [744.5, 773.2]80 [736.9, 780.8]95
+#>  2 GOOG   NAIVE(Cl…   254  N(759, 250)  759. [738.6, 779.2]80 [727.9, 789.9]95
+#>  3 GOOG   NAIVE(Cl…   255  N(759, 376)  759. [734.0, 783.7]80 [720.9, 796.9]95
+#>  4 GOOG   NAIVE(Cl…   256  N(759, 501)  759. [730.2, 787.6]80 [715.0, 802.7]95
+#>  5 GOOG   NAIVE(Cl…   257  N(759, 626)  759. [726.8, 790.9]80 [709.8, 807.9]95
+#>  6 GOOG   NAIVE(Cl…   258  N(759, 751)  759. [723.8, 794.0]80 [705.2, 812.6]95
+#>  7 GOOG   NAIVE(Cl…   259  N(759, 876)  759. [720.9, 796.8]80 [700.9, 816.9]95
+#>  8 GOOG   NAIVE(Cl…   260 N(759, 1002)  759. [718.3, 799.4]80 [696.8, 820.9]95
+#>  9 GOOG   NAIVE(Cl…   261 N(759, 1127)  759. [715.9, 801.9]80 [693.1, 824.7]95
+#> 10 GOOG   NAIVE(Cl…   262 N(759, 1252)  759. [713.5, 804.2]80 [689.5, 828.2]95
 google_2015 %>%
   model(NAIVE(Close)) %>%
   forecast(h = 10) %>%
   autoplot(google_2015) +
-  labs(title = "Google daily closing stock price", y = "$US")
+  labs(title="Google daily closing stock price", y="$US" )
 fit <- google_2015 %>%
   model(NAIVE(Close))
 sim <- fit %>% generate(h = 30, times = 5, bootstrap = TRUE)
 sim
+#> # A tsibble: 150 x 5 [1]
+#> # Key:       Symbol, .model, .rep [5]
+#>    Symbol .model         day .rep   .sim
+#>    <chr>  <chr>        <dbl> <chr> <dbl>
+#>  1 GOOG   NAIVE(Close)   253 1      756.
+#>  2 GOOG   NAIVE(Close)   254 1      749.
+#>  3 GOOG   NAIVE(Close)   255 1      751.
+#>  4 GOOG   NAIVE(Close)   256 1      750.
+#>  5 GOOG   NAIVE(Close)   257 1      754.
+#>  6 GOOG   NAIVE(Close)   258 1      754.
+#>  7 GOOG   NAIVE(Close)   259 1      758.
+#>  8 GOOG   NAIVE(Close)   260 1      763.
+#>  9 GOOG   NAIVE(Close)   261 1      759.
+#> 10 GOOG   NAIVE(Close)   262 1      748.
+#> # … with 140 more rows
 google_2015 %>%
   ggplot(aes(x = day)) +
   geom_line(aes(y = Close)) +
   geom_line(aes(y = .sim, colour = as.factor(.rep)),
-    data = sim
-  ) +
-  labs(title = "Google daily closing stock price", y = "$US") +
+    data = sim) +
+  labs(title="Google daily closing stock price", y="$US" ) +
   guides(colour = "none")
 fc <- fit %>% forecast(h = 30, bootstrap = TRUE)
 fc
+#> # A fable: 30 x 5 [1]
+#> # Key:     Symbol, .model [1]
+#>    Symbol .model         day        Close .mean
+#>    <chr>  <chr>        <dbl>       <dist> <dbl>
+#>  1 GOOG   NAIVE(Close)   253 sample[5000]  759.
+#>  2 GOOG   NAIVE(Close)   254 sample[5000]  759.
+#>  3 GOOG   NAIVE(Close)   255 sample[5000]  758.
+#>  4 GOOG   NAIVE(Close)   256 sample[5000]  759.
+#>  5 GOOG   NAIVE(Close)   257 sample[5000]  759.
+#>  6 GOOG   NAIVE(Close)   258 sample[5000]  759.
+#>  7 GOOG   NAIVE(Close)   259 sample[5000]  759.
+#>  8 GOOG   NAIVE(Close)   260 sample[5000]  759.
+#>  9 GOOG   NAIVE(Close)   261 sample[5000]  759.
+#> 10 GOOG   NAIVE(Close)   262 sample[5000]  759.
+#> # … with 20 more rows
 autoplot(fc, google_2015) +
-  labs(title = "Google daily closing stock price", y = "$US")
+  labs(title="Google daily closing stock price", y="$US" )
 google_2015 %>%
   model(NAIVE(Close)) %>%
   forecast(h = 10, bootstrap = TRUE, times = 1000) %>%
   hilo()
-```
+#> # A tsibble: 10 x 7 [1]
+#> # Key:       Symbol, .model [1]
+#>    Symbol .model      day        Close .mean            `80%`            `95%`
+#>    <chr>  <chr>     <dbl>       <dist> <dbl>           <hilo>           <hilo>
+#>  1 GOOG   NAIVE(Cl…   253 sample[1000]  760. [748.2, 770.8]80 [743.9, 777.6]95
+#>  2 GOOG   NAIVE(Cl…   254 sample[1000]  760. [743.9, 776.1]80 [734.1, 801.6]95
+#>  3 GOOG   NAIVE(Cl…   255 sample[1000]  760. [739.5, 781.7]80 [728.6, 809.0]95
+#>  4 GOOG   NAIVE(Cl…   256 sample[1000]  760. [736.7, 784.7]80 [723.4, 813.1]95
+#>  5 GOOG   NAIVE(Cl…   257 sample[1000]  760. [734.4, 787.2]80 [719.4, 819.7]95
+#>  6 GOOG   NAIVE(Cl…   258 sample[1000]  760. [731.5, 790.2]80 [717.8, 820.3]95
+#>  7 GOOG   NAIVE(Cl…   259 sample[1000]  761. [730.4, 793.0]80 [713.0, 826.3]95
+#>  8 GOOG   NAIVE(Cl…   260 sample[1000]  761. [726.2, 796.2]80 [706.3, 830.7]95
+#>  9 GOOG   NAIVE(Cl…   261 sample[1000]  761. [723.5, 800.2]80 [707.5, 841.0]95
+#> 10 GOOG   NAIVE(Cl…   262 sample[1000]  760. [719.2, 801.8]80 [701.9, 841.4]95
 
-# 5.6 Forecasting using transformations 
+
+```
+# 5.6 Forecasting using transformations `r tags$a(href='https://otexts.com/fpp3/ftransformations.html')` 
 
 
 ```{r}
@@ -595,13 +1165,12 @@ prices %>%
   autoplot(prices %>% filter(!is.na(eggs)),
     level = 80, point_forecast = lst(mean, median)
   ) +
-  labs(
-    title = "Annual egg prices",
-    y = "$US (in cents adjusted for inflation) "
-  )
-```
+  labs(title = "Annual egg prices",
+       y = "$US (in cents adjusted for inflation) ")
 
-# 5.7 Forecasting with decomposition 
+
+```
+# 5.7 Forecasting with decomposition `r tags$a(href='https://otexts.com/fpp3/forecasting-decomposition.html')` 
 
 
 ```{r}
@@ -617,10 +1186,8 @@ dcmp %>%
   model(NAIVE(season_adjust)) %>%
   forecast() %>%
   autoplot(dcmp) +
-  labs(
-    y = "Number of people",
-    title = "US retail employment"
-  )
+  labs(y = "Number of people",
+       title = "US retail employment")
 fit_dcmp <- us_retail_employment %>%
   model(stlf = decomposition_model(
     STL(Employed ~ trend(window = 7), robust = TRUE),
@@ -628,15 +1195,14 @@ fit_dcmp <- us_retail_employment %>%
   ))
 fit_dcmp %>%
   forecast() %>%
-  autoplot(us_retail_employment) +
-  labs(
-    y = "Number of people",
-    title = "US retail employment"
-  )
+  autoplot(us_retail_employment)+
+  labs(y = "Number of people",
+       title = "US retail employment")
 fit_dcmp %>% gg_tsresiduals()
-```
 
-# 5.8 Evaluating point forecast accuracy 
+
+```
+# 5.8 Evaluating point forecast accuracy `r tags$a(href='https://otexts.com/fpp3/accuracy.html')` 
 
 
 ```{r}
@@ -645,7 +1211,7 @@ fit_dcmp %>% gg_tsresiduals()
 aus_production %>% filter(year(Quarter) >= 1995)
 aus_production %>% filter_index("1995 Q1" ~ .)
 aus_production %>%
-  slice(n() - 19:0)
+  slice(n()-19:0)
 aus_retail %>%
   group_by(State, Industry) %>%
   slice(1:12)
@@ -687,17 +1253,15 @@ google_fc <- google_fit %>%
   forecast(google_jan_2016)
 google_fc %>%
   autoplot(bind_rows(google_2015, google_jan_2016),
-    level = NULL
-  ) +
-  labs(
-    y = "$US",
-    title = "Google closing stock prices from Jan 2015"
-  ) +
+    level = NULL) +
+  labs(y = "$US",
+       title = "Google closing stock prices from Jan 2015") +
   guides(colour = guide_legend(title = "Forecast"))
 accuracy(google_fc, google_stock)
-```
 
-# 5.9 Evaluating distributional forecast accuracy 
+
+```
+# 5.9 Evaluating distributional forecast accuracy `r tags$a(href='https://otexts.com/fpp3/distaccuracy.html')` 
 
 
 ```{r}
@@ -705,27 +1269,44 @@ accuracy(google_fc, google_stock)
 
 google_fc %>%
   filter(.model == "Naïve") %>%
-  autoplot(bind_rows(google_2015, google_jan_2016), level = 80) +
-  labs(
-    y = "$US",
-    title = "Google closing stock prices"
-  )
+  autoplot(bind_rows(google_2015, google_jan_2016), level=80)+
+  labs(y = "$US",
+       title = "Google closing stock prices")
 google_fc %>%
   filter(.model == "Naïve", Date == "2016-01-04") %>%
-  accuracy(google_stock, list(qs = quantile_score), probs = 0.10)
+  accuracy(google_stock, list(qs=quantile_score), probs=0.10)
+#> # A tibble: 1 × 4
+#>   .model Symbol .type    qs
+#>   <chr>  <chr>  <chr> <dbl>
+#> 1 Naïve  GOOG   Test   4.86
 google_fc %>%
   filter(.model == "Naïve", Date == "2016-01-04") %>%
   accuracy(google_stock,
-    list(winkler = winkler_score),
-    level = 80
-  )
+    list(winkler = winkler_score), level = 80)
+#> # A tibble: 1 × 4
+#>   .model Symbol .type winkler
+#>   <chr>  <chr>  <chr>   <dbl>
+#> 1 Naïve  GOOG   Test     55.7
 google_fc %>%
   accuracy(google_stock, list(crps = CRPS))
+#> # A tibble: 3 × 4
+#>   .model Symbol .type  crps
+#>   <chr>  <chr>  <chr> <dbl>
+#> 1 Drift  GOOG   Test   33.5
+#> 2 Mean   GOOG   Test   76.7
+#> 3 Naïve  GOOG   Test   26.5
 google_fc %>%
   accuracy(google_stock, list(skill = skill_score(CRPS)))
-```
+#> # A tibble: 3 × 4
+#>   .model Symbol .type  skill
+#>   <chr>  <chr>  <chr>  <dbl>
+#> 1 Drift  GOOG   Test  -0.266
+#> 2 Mean   GOOG   Test  -1.90 
+#> 3 Naïve  GOOG   Test   0
 
-# 5.10 Time series cross-validation 
+
+```
+# 5.10 Time series cross-validation `r tags$a(href='https://otexts.com/fpp3/tscv.html')` 
 
 
 ```{r}
@@ -736,6 +1317,21 @@ google_2015_tr <- google_2015 %>%
   stretch_tsibble(.init = 3, .step = 1) %>%
   relocate(Date, Symbol, .id)
 google_2015_tr
+#> # A tsibble: 31,875 x 10 [1]
+#> # Key:       Symbol, .id [250]
+#>    Date       Symbol   .id  Open  High   Low Close Adj_Close  Volume   day
+#>    <date>     <chr>  <int> <dbl> <dbl> <dbl> <dbl>     <dbl>   <dbl> <int>
+#>  1 2015-01-02 GOOG       1  526.  528.  521.  522.      522. 1447600     1
+#>  2 2015-01-05 GOOG       1  520.  521.  510.  511.      511. 2059800     2
+#>  3 2015-01-06 GOOG       1  512.  513.  498.  499.      499. 2899900     3
+#>  4 2015-01-02 GOOG       2  526.  528.  521.  522.      522. 1447600     1
+#>  5 2015-01-05 GOOG       2  520.  521.  510.  511.      511. 2059800     2
+#>  6 2015-01-06 GOOG       2  512.  513.  498.  499.      499. 2899900     3
+#>  7 2015-01-07 GOOG       2  504.  504.  497.  498.      498. 2065100     4
+#>  8 2015-01-02 GOOG       3  526.  528.  521.  522.      522. 1447600     1
+#>  9 2015-01-05 GOOG       3  520.  521.  510.  511.      511. 2059800     2
+#> 10 2015-01-06 GOOG       3  512.  513.  498.  499.      499. 2899900     3
+#> # … with 31,865 more rows
 # TSCV accuracy
 google_2015_tr %>%
   model(RW(Close ~ drift())) %>%
@@ -758,42 +1354,100 @@ fc %>%
   accuracy(google_2015, by = c("h", ".model")) %>%
   ggplot(aes(x = h, y = RMSE)) +
   geom_point()
+
+
+```
+# 5.11 Exercises `r tags$a(href='https://otexts.com/fpp3/toolbox-exercises.html')` 
+
+
+```{r}
+
+
+# Extract data of interest
+recent_production <- aus_production %>%
+  filter(year(Quarter) >= 1992)
+# Define and estimate a model
+fit <- recent_production %>% model(SNAIVE(Beer))
+# Look at the residuals
+fit %>% gg_tsresiduals()
+# Look a some forecasts
+fit %>% forecast() %>% autoplot(recent_production)
+myseries_train <- myseries %>%
+  filter(year(Month) < 2011)
+autoplot(myseries, Turnover) +
+  autolayer(myseries_train, Turnover, colour = "red")
+fit <- myseries_train %>%
+  model(SNAIVE())
+fit %>% gg_tsresiduals()
+fc <- fit %>%
+  forecast(new_data = anti_join(myseries, myseries_train))
+fc %>% autoplot(myseries)
+fit %>% accuracy()
+fc %>% accuracy(myseries)
+
+
 ```
 
-# 7.1 The linear model 
+
+
+
+
+
+
+
+
+
+
+# 7.1 The linear model `r tags$a(href='https://otexts.com/fpp3/regression-intro.html')` 
 
 
 ```{r}
 
 
 us_change %>%
-  pivot_longer(c(Consumption, Income), names_to = "Series") %>%
+  pivot_longer(c(Consumption, Income), names_to="Series") %>%
   autoplot(value) +
   labs(y = "% change")
 us_change %>%
   ggplot(aes(x = Income, y = Consumption)) +
-  labs(
-    y = "Consumption (quarterly % change)",
-    x = "Income (quarterly % change)"
-  ) +
+  labs(y = "Consumption (quarterly % change)",
+       x = "Income (quarterly % change)") +
   geom_point() +
   geom_smooth(method = "lm", se = FALSE)
 us_change %>%
   model(TSLM(Consumption ~ Income)) %>%
   report()
+#> Series: Consumption 
+#> Model: TSLM 
+#> 
+#> Residuals:
+#>     Min      1Q  Median      3Q     Max 
+#> -2.5824 -0.2778  0.0186  0.3233  1.4223 
+#> 
+#> Coefficients:
+#>             Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept)   0.5445     0.0540   10.08  < 2e-16 ***
+#> Income        0.2718     0.0467    5.82  2.4e-08 ***
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 0.591 on 196 degrees of freedom
+#> Multiple R-squared: 0.147,   Adjusted R-squared: 0.143
+#> F-statistic: 33.8 on 1 and 196 DF, p-value: 2.4e-08
 us_change %>%
   select(-Consumption, -Income) %>%
   pivot_longer(-Quarter) %>%
-  ggplot(aes(Quarter, value, color = name)) +
+  ggplot(aes(Quarter, value, colour = name)) +
   geom_line() +
   facet_grid(name ~ ., scales = "free_y") +
   guides(colour = "none") +
-  labs(y = "% change")
+  labs(y="% change")
 us_change %>%
   GGally::ggpairs(columns = 2:6)
-```
 
-# 7.2 Least squares estimation 
+
+```
+# 7.2 Least squares estimation `r tags$a(href='https://otexts.com/fpp3/least-squares.html')` 
 
 
 ```{r}
@@ -801,17 +1455,36 @@ us_change %>%
 
 fit_consMR <- us_change %>%
   model(tslm = TSLM(Consumption ~ Income + Production +
-    Unemployment + Savings))
+                                    Unemployment + Savings))
 report(fit_consMR)
+#> Series: Consumption 
+#> Model: TSLM 
+#> 
+#> Residuals:
+#>     Min      1Q  Median      3Q     Max 
+#> -0.9055 -0.1582 -0.0361  0.1362  1.1547 
+#> 
+#> Coefficients:
+#>              Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept)   0.25311    0.03447    7.34  5.7e-12 ***
+#> Income        0.74058    0.04012   18.46  < 2e-16 ***
+#> Production    0.04717    0.02314    2.04    0.043 *  
+#> Unemployment -0.17469    0.09551   -1.83    0.069 .  
+#> Savings      -0.05289    0.00292  -18.09  < 2e-16 ***
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 0.31 on 193 degrees of freedom
+#> Multiple R-squared: 0.768,   Adjusted R-squared: 0.763
+#> F-statistic:  160 on 4 and 193 DF, p-value: <2e-16
 augment(fit_consMR) %>%
   ggplot(aes(x = Quarter)) +
   geom_line(aes(y = Consumption, colour = "Data")) +
   geom_line(aes(y = .fitted, colour = "Fitted")) +
-  labs(
-    y = NULL,
+  labs(y = NULL,
     title = "Percent change in US consumption expenditure"
   ) +
-  scale_colour_manual(values = c(Data = "black", Fitted = "#D55E00")) +
+  scale_colour_manual(values=c(Data="black",Fitted="#D55E00")) +
   guides(colour = guide_legend(title = NULL))
 augment(fit_consMR) %>%
   ggplot(aes(x = Consumption, y = .fitted)) +
@@ -822,9 +1495,10 @@ augment(fit_consMR) %>%
     title = "Percent change in US consumption expenditure"
   ) +
   geom_abline(intercept = 0, slope = 1)
-```
 
-# 7.3 Evaluating the regression model 
+
+```
+# 7.3 Evaluating the regression model `r tags$a(href='https://otexts.com/fpp3/regression-evaluation.html')` 
 
 
 ```{r}
@@ -833,28 +1507,48 @@ augment(fit_consMR) %>%
 fit_consMR %>% gg_tsresiduals()
 augment(fit_consMR) %>%
   features(.innov, ljung_box, lag = 10, dof = 5)
+#> # A tibble: 1 × 3
+#>   .model lb_stat lb_pvalue
+#>   <chr>    <dbl>     <dbl>
+#> 1 tslm      18.9   0.00204
 us_change %>%
   left_join(residuals(fit_consMR), by = "Quarter") %>%
   pivot_longer(Income:Unemployment,
-    names_to = "regressor", values_to = "x"
-  ) %>%
+               names_to = "regressor", values_to = "x") %>%
   ggplot(aes(x = x, y = .resid)) +
   geom_point() +
   facet_wrap(. ~ regressor, scales = "free_x") +
   labs(y = "Residuals", x = "")
 augment(fit_consMR) %>%
   ggplot(aes(x = .fitted, y = .resid)) +
-  geom_point() +
-  labs(x = "Fitted", y = "Residuals")
+  geom_point() + labs(x = "Fitted", y = "Residuals")
 fit <- aus_airpassengers %>%
   filter(Year <= 2011) %>%
   left_join(guinea_rice, by = "Year") %>%
   model(TSLM(Passengers ~ Production))
 report(fit)
+#> Series: Passengers 
+#> Model: TSLM 
+#> 
+#> Residuals:
+#>    Min     1Q Median     3Q    Max 
+#> -5.945 -1.892 -0.327  1.862 10.421 
+#> 
+#> Coefficients:
+#>             Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept)    -7.49       1.20   -6.23  2.3e-07 ***
+#> Production     40.29       1.34   30.13  < 2e-16 ***
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 3.24 on 40 degrees of freedom
+#> Multiple R-squared: 0.958,   Adjusted R-squared: 0.957
+#> F-statistic:  908 on 1 and 40 DF, p-value: <2e-16
 fit %>% gg_tsresiduals()
-```
 
-# 7.4 Some useful predictors 
+
+```
+# 7.4 Some useful predictors `r tags$a(href='https://otexts.com/fpp3/useful-predictors.html')` 
 
 
 ```{r}
@@ -864,13 +1558,31 @@ recent_production <- aus_production %>%
   filter(year(Quarter) >= 1992)
 recent_production %>%
   autoplot(Beer) +
-  labs(
-    y = "Megalitres",
-    title = "Australian quarterly beer production"
-  )
+  labs(y = "Megalitres",
+       title = "Australian quarterly beer production")
 fit_beer <- recent_production %>%
   model(TSLM(Beer ~ trend() + season()))
 report(fit_beer)
+#> Series: Beer 
+#> Model: TSLM 
+#> 
+#> Residuals:
+#>    Min     1Q Median     3Q    Max 
+#> -42.90  -7.60  -0.46   7.99  21.79 
+#> 
+#> Coefficients:
+#>               Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept)   441.8004     3.7335  118.33  < 2e-16 ***
+#> trend()        -0.3403     0.0666   -5.11  2.7e-06 ***
+#> season()year2 -34.6597     3.9683   -8.73  9.1e-13 ***
+#> season()year3 -17.8216     4.0225   -4.43  3.4e-05 ***
+#> season()year4  72.7964     4.0230   18.09  < 2e-16 ***
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 12.2 on 69 degrees of freedom
+#> Multiple R-squared: 0.924,   Adjusted R-squared: 0.92
+#> F-statistic:  211 on 4 and 69 DF, p-value: <2e-16
 augment(fit_beer) %>%
   ggplot(aes(x = Quarter)) +
   geom_line(aes(y = Beer, colour = "Data")) +
@@ -878,29 +1590,44 @@ augment(fit_beer) %>%
   scale_colour_manual(
     values = c(Data = "black", Fitted = "#D55E00")
   ) +
-  labs(
-    y = "Megalitres",
-    title = "Australian quarterly beer production"
-  ) +
+  labs(y = "Megalitres",
+       title = "Australian quarterly beer production") +
   guides(colour = guide_legend(title = "Series"))
 augment(fit_beer) %>%
-  ggplot(aes(
-    x = Beer, y = .fitted,
-    colour = factor(quarter(Quarter))
-  )) +
+  ggplot(aes(x = Beer, y = .fitted,
+             colour = factor(quarter(Quarter)))) +
   geom_point() +
-  labs(
-    y = "Fitted", x = "Actual values",
-    title = "Australian quarterly beer production"
-  ) +
+  labs(y = "Fitted", x = "Actual values",
+       title = "Australian quarterly beer production") +
   geom_abline(intercept = 0, slope = 1) +
   guides(colour = guide_legend(title = "Quarter"))
 fourier_beer <- recent_production %>%
   model(TSLM(Beer ~ trend() + fourier(K = 2)))
 report(fourier_beer)
-```
+#> Series: Beer 
+#> Model: TSLM 
+#> 
+#> Residuals:
+#>    Min     1Q Median     3Q    Max 
+#> -42.90  -7.60  -0.46   7.99  21.79 
+#> 
+#> Coefficients:
+#>                    Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept)        446.8792     2.8732  155.53  < 2e-16 ***
+#> trend()             -0.3403     0.0666   -5.11  2.7e-06 ***
+#> fourier(K = 2)C1_4   8.9108     2.0112    4.43  3.4e-05 ***
+#> fourier(K = 2)S1_4 -53.7281     2.0112  -26.71  < 2e-16 ***
+#> fourier(K = 2)C2_4 -13.9896     1.4226   -9.83  9.3e-15 ***
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 12.2 on 69 degrees of freedom
+#> Multiple R-squared: 0.924,   Adjusted R-squared: 0.92
+#> F-statistic:  211 on 4 and 69 DF, p-value: <2e-16
 
-# 7.5 Selecting predictors 
+
+```
+# 7.5 Selecting predictors `r tags$a(href='https://otexts.com/fpp3/selecting-predictors.html')` 
 
 
 ```{r}
@@ -908,9 +1635,14 @@ report(fourier_beer)
 
 glance(fit_consMR) %>%
   select(adj_r_squared, CV, AIC, AICc, BIC)
-```
+#> # A tibble: 1 × 5
+#>   adj_r_squared    CV   AIC  AICc   BIC
+#>           <dbl> <dbl> <dbl> <dbl> <dbl>
+#> 1         0.763 0.104 -457. -456. -437.
 
-# 7.6 Forecasting with regression 
+
+```
+# 7.6 Forecasting with regression `r tags$a(href='https://otexts.com/fpp3/forecasting-regression.html')` 
 
 
 ```{r}
@@ -933,11 +1665,10 @@ fit_consBest <- us_change %>%
   )
 future_scenarios <- scenarios(
   Increase = new_data(us_change, 4) %>%
-    mutate(Income = 1, Savings = 0.5, Unemployment = 0),
+    mutate(Income=1, Savings=0.5, Unemployment=0),
   Decrease = new_data(us_change, 4) %>%
-    mutate(Income = -1, Savings = -0.5, Unemployment = 0),
-  names_to = "Scenario"
-)
+    mutate(Income=-1, Savings=-0.5, Unemployment=0),
+  names_to = "Scenario")
 
 fc <- forecast(fit_consBest, new_data = future_scenarios)
 us_change %>%
@@ -959,9 +1690,10 @@ us_change %>%
   autoplot(Consumption) +
   autolayer(fcast) +
   labs(title = "US consumption", y = "% change")
-```
 
-# 7.7 Nonlinear regression 
+
+```
+# 7.7 Nonlinear regression `r tags$a(href='https://otexts.com/fpp3/nonlinear-regression.html')` 
 
 
 ```{r}
@@ -970,7 +1702,7 @@ us_change %>%
 boston_men <- boston_marathon %>%
   filter(Year >= 1924) %>%
   filter(Event == "Men's open division") %>%
-  mutate(Minutes = as.numeric(Time) / 60)
+  mutate(Minutes = as.numeric(Time)/60)
 fit_trends <- boston_men %>%
   model(
     linear = TSLM(Minutes ~ trend()),
@@ -981,19 +1713,42 @@ fc_trends <- fit_trends %>% forecast(h = 10)
 
 boston_men %>%
   autoplot(Minutes) +
-  geom_line(
-    data = fitted(fit_trends),
-    aes(y = .fitted, colour = .model)
-  ) +
+  geom_line(data = fitted(fit_trends),
+            aes(y = .fitted, colour = .model)) +
   autolayer(fc_trends, alpha = 0.5, level = 95) +
-  labs(
-    y = "Minutes",
-    title = "Boston marathon winning times"
-  )
+  labs(y = "Minutes",
+       title = "Boston marathon winning times")
+
+
 ```
 
 
-# 8.1 Simple exponential smoothing 
+# 7.10 Exercises `r tags$a(href='https://otexts.com/fpp3/regression-exercises.html')` 
+
+
+```{r}
+
+
+jan14_vic_elec <- vic_elec %>%
+  filter(yearmonth(Time) == yearmonth("2014 Jan")) %>%
+  index_by(Date = as_date(Time)) %>%
+  summarise(
+    Demand = sum(Demand),
+    Temperature = max(Temperature)
+  )
+jan14_vic_elec %>%
+  model(TSLM(Demand ~ Temperature)) %>%
+  forecast(
+    new_data(jan14_vic_elec, 1) %>%
+      mutate(Temperature = 15)
+  ) %>%
+  autoplot(jan14_vic_elec)
+
+
+```
+
+
+# 8.1 Simple exponential smoothing `r tags$a(href='https://otexts.com/fpp3/ses.html')` 
 
 
 ```{r}
@@ -1011,15 +1766,14 @@ fc <- fit %>%
   forecast(h = 5)
 fc %>%
   autoplot(algeria_economy) +
-  geom_line(aes(y = .fitted),
-    col = "#D55E00",
-    data = augment(fit)
-  ) +
-  labs(y = "% of GDP", title = "Exports: Algeria") +
+  geom_line(aes(y = .fitted), col="#D55E00",
+            data = augment(fit)) +
+  labs(y="% of GDP", title="Exports: Algeria") +
   guides(colour = "none")
-```
 
-# 8.2 Methods with trend 
+
+```
+# 8.2 Methods with trend `r tags$a(href='https://otexts.com/fpp3/holt.html')` 
 
 
 ```{r}
@@ -1038,50 +1792,59 @@ fc <- fit %>% forecast(h = 10)
 aus_economy %>%
   model(
     `Holt's method` = ETS(Pop ~ error("A") +
-      trend("A") + season("N")),
+                       trend("A") + season("N")),
     `Damped Holt's method` = ETS(Pop ~ error("A") +
-      trend("Ad", phi = 0.9) + season("N"))
+                       trend("Ad", phi = 0.9) + season("N"))
   ) %>%
   forecast(h = 15) %>%
   autoplot(aus_economy, level = NULL) +
-  labs(
-    title = "Australian population",
-    y = "Millions"
-  ) +
+  labs(title = "Australian population",
+       y = "Millions") +
   guides(colour = guide_legend(title = "Forecast"))
 www_usage <- as_tsibble(WWWusage)
 www_usage %>% autoplot(value) +
-  labs(
-    x = "Minute", y = "Number of users",
-    title = "Internet usage per minute"
-  )
+  labs(x="Minute", y="Number of users",
+       title = "Internet usage per minute")
 www_usage %>%
   stretch_tsibble(.init = 10) %>%
   model(
     SES = ETS(value ~ error("A") + trend("N") + season("N")),
     Holt = ETS(value ~ error("A") + trend("A") + season("N")),
     Damped = ETS(value ~ error("A") + trend("Ad") +
-      season("N"))
+                   season("N"))
   ) %>%
   forecast(h = 1) %>%
   accuracy(www_usage)
+#> # A tibble: 3 × 10
+#>   .model .type     ME  RMSE   MAE   MPE  MAPE  MASE RMSSE  ACF1
+#>   <chr>  <chr>  <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+#> 1 Damped Test  0.288   3.69  3.00 0.347  2.26 0.663 0.636 0.336
+#> 2 Holt   Test  0.0610  3.87  3.17 0.244  2.38 0.701 0.668 0.296
+#> 3 SES    Test  1.46    6.05  4.81 0.904  3.55 1.06  1.04  0.803
 fit <- www_usage %>%
   model(
     Damped = ETS(value ~ error("A") + trend("Ad") +
-      season("N"))
+                   season("N"))
   )
 # Estimated parameters:
 tidy(fit)
+#> # A tibble: 5 × 3
+#>   .model term  estimate
+#>   <chr>  <chr>    <dbl>
+#> 1 Damped alpha   1.00  
+#> 2 Damped beta    0.997 
+#> 3 Damped phi     0.815 
+#> 4 Damped l[0]   90.4   
+#> 5 Damped b[0]   -0.0173
 fit %>%
   forecast(h = 10) %>%
   autoplot(www_usage) +
-  labs(
-    x = "Minute", y = "Number of users",
-    title = "Internet usage per minute"
-  )
-```
+  labs(x="Minute", y="Number of users",
+       title = "Internet usage per minute")
 
-# 8.3 Methods with seasonality 
+
+```
+# 8.3 Methods with seasonality `r tags$a(href='https://otexts.com/fpp3/holt-winters.html')` 
 
 
 ```{r}
@@ -1089,29 +1852,25 @@ fit %>%
 
 aus_holidays <- tourism %>%
   filter(Purpose == "Holiday") %>%
-  summarise(Trips = sum(Trips) / 1e3)
+  summarise(Trips = sum(Trips)/1e3)
 fit <- aus_holidays %>%
   model(
     additive = ETS(Trips ~ error("A") + trend("A") +
-      season("A")),
+                                                season("A")),
     multiplicative = ETS(Trips ~ error("M") + trend("A") +
-      season("M"))
+                                                season("M"))
   )
 fc <- fit %>% forecast(h = "3 years")
 fc %>%
   autoplot(aus_holidays, level = NULL) +
-  labs(
-    title = "Australian domestic tourism",
-    y = "Overnight trips (millions)"
-  ) +
+  labs(title="Australian domestic tourism",
+       y="Overnight trips (millions)") +
   guides(colour = guide_legend(title = "Forecast"))
 sth_cross_ped <- pedestrian %>%
-  filter(
-    Date >= "2016-07-01",
-    Sensor == "Southern Cross Station"
-  ) %>%
+  filter(Date >= "2016-07-01",
+         Sensor == "Southern Cross Station") %>%
   index_by(Date) %>%
-  summarise(Count = sum(Count) / 1000)
+  summarise(Count = sum(Count)/1000)
 sth_cross_ped %>%
   filter(Date <= "2016-07-31") %>%
   model(
@@ -1119,14 +1878,14 @@ sth_cross_ped %>%
   ) %>%
   forecast(h = "2 weeks") %>%
   autoplot(sth_cross_ped %>% filter(Date <= "2016-08-14")) +
-  labs(
-    title = "Daily traffic: Southern Cross",
-    y = "Pedestrians ('000)"
-  )
+  labs(title = "Daily traffic: Southern Cross",
+       y="Pedestrians ('000)")
+
+
 ```
 
 
-# 8.6 Estimation and model selection 
+# 8.6 Estimation and model selection `r tags$a(href='https://otexts.com/fpp3/ets-estimation.html')` 
 
 
 ```{r}
@@ -1134,16 +1893,31 @@ sth_cross_ped %>%
 
 aus_holidays <- tourism %>%
   filter(Purpose == "Holiday") %>%
-  summarise(Trips = sum(Trips) / 1e3)
+  summarise(Trips = sum(Trips)/1e3)
 fit <- aus_holidays %>%
   model(ETS(Trips))
 report(fit)
+#> Series: Trips 
+#> Model: ETS(M,N,A) 
+#>   Smoothing parameters:
+#>     alpha = 0.3484 
+#>     gamma = 1e-04 
+#> 
+#>   Initial states:
+#>   l[0]    s[0]   s[-1]   s[-2] s[-3]
+#>  9.727 -0.5376 -0.6884 -0.2934 1.519
+#> 
+#>   sigma^2:  0.0022
+#> 
+#>   AIC  AICc   BIC 
+#> 226.2 227.8 242.9
 components(fit) %>%
   autoplot() +
   labs(title = "ETS(M,N,A) components")
-```
 
-# 8.7 Forecasting with ETS models 
+
+```
+# 8.7 Forecasting with ETS models `r tags$a(href='https://otexts.com/fpp3/ets-forecasting.html')` 
 
 
 ```{r}
@@ -1151,42 +1925,51 @@ components(fit) %>%
 
 fit %>%
   forecast(h = 8) %>%
-  autoplot(aus_holidays) +
-  labs(
-    title = "Australian domestic tourism",
-    y = "Overnight trips (millions)"
-  )
+  autoplot(aus_holidays)+
+  labs(title="Australian domestic tourism",
+       y="Overnight trips (millions)")
+
+
 ```
 
 
 
-# 9.1 Stationarity and differencing 
+# 9.1 Stationarity and differencing `r tags$a(href='https://otexts.com/fpp3/stationarity.html')` 
 
 
 ```{r}
 
 
+google_2015 <- gafa_stock %>%
+  filter(Symbol == "GOOG", year(Date) == 2015) 
+google_2015 %>% ACF(Close) %>% 
+  autoplot() + labs(subtitle = "Google closing stock price")
+google_2015 %>% ACF(difference(Close)) %>% 
+  autoplot() + labs(subtitle = "Changes in Google closing stock price")
 google_2015 %>%
   mutate(diff_close = difference(Close)) %>%
   features(diff_close, ljung_box, lag = 10)
+#> # A tibble: 1 × 3
+#>   Symbol lb_stat lb_pvalue
+#>   <chr>    <dbl>     <dbl>
+#> 1 GOOG      7.91     0.637
 PBS %>%
   filter(ATC2 == "H02") %>%
-  summarise(Cost = sum(Cost) / 1e6) %>%
+  summarise(Cost = sum(Cost)/1e6) %>%
   transmute(
     `Sales ($million)` = Cost,
     `Log sales` = log(Cost),
     `Annual change in log sales` = difference(log(Cost), 12),
     `Doubly differenced log sales` =
-      difference(difference(log(Cost), 12), 1)
+                     difference(difference(log(Cost), 12), 1)
   ) %>%
-  pivot_longer(-Month, names_to = "Type", values_to = "Sales") %>%
+  pivot_longer(-Month, names_to="Type", values_to="Sales") %>%
   mutate(
     Type = factor(Type, levels = c(
       "Sales ($million)",
       "Log sales",
       "Annual change in log sales",
-      "Doubly differenced log sales"
-    ))
+      "Doubly differenced log sales"))
   ) %>%
   ggplot(aes(x = Month, y = Sales)) +
   geom_line() +
@@ -1194,25 +1977,47 @@ PBS %>%
   labs(title = "Corticosteroid drug sales", y = NULL)
 google_2015 %>%
   features(Close, unitroot_kpss)
+#> # A tibble: 1 × 3
+#>   Symbol kpss_stat kpss_pvalue
+#>   <chr>      <dbl>       <dbl>
+#> 1 GOOG        3.56        0.01
 google_2015 %>%
   mutate(diff_close = difference(Close)) %>%
   features(diff_close, unitroot_kpss)
+#> # A tibble: 1 × 3
+#>   Symbol kpss_stat kpss_pvalue
+#>   <chr>      <dbl>       <dbl>
+#> 1 GOOG      0.0989         0.1
 google_2015 %>%
   features(Close, unitroot_ndiffs)
+#> # A tibble: 1 × 2
+#>   Symbol ndiffs
+#>   <chr>   <int>
+#> 1 GOOG        1
 aus_total_retail <- aus_retail %>%
   summarise(Turnover = sum(Turnover))
 aus_total_retail %>%
   mutate(log_turnover = log(Turnover)) %>%
   features(log_turnover, unitroot_nsdiffs)
+#> # A tibble: 1 × 1
+#>   nsdiffs
+#>     <int>
+#> 1       1
 
 aus_total_retail %>%
   mutate(log_turnover = difference(log(Turnover), 12)) %>%
   features(log_turnover, unitroot_ndiffs)
+#> # A tibble: 1 × 1
+#>   ndiffs
+#>    <int>
+#> 1      1
+
+
 ```
 
 
 
-# 9.5 Non-seasonal ARIMA models 
+# 9.5 Non-seasonal ARIMA models `r tags$a(href='https://otexts.com/fpp3/non-seasonal-arima.html')` 
 
 
 ```{r}
@@ -1226,8 +2031,17 @@ fit <- global_economy %>%
   filter(Code == "EGY") %>%
   model(ARIMA(Exports))
 report(fit)
-fit %>%
-  forecast(h = 10) %>%
+#> Series: Exports 
+#> Model: ARIMA(2,0,1) w/ mean 
+#> 
+#> Coefficients:
+#>          ar1      ar2      ma1  constant
+#>       1.6764  -0.8034  -0.6896    2.5623
+#> s.e.  0.1111   0.0928   0.1492    0.1161
+#> 
+#> sigma^2 estimated as 8.046:  log likelihood=-141.6
+#> AIC=293.1   AICc=294.3   BIC=303.4
+fit %>% forecast(h=10) %>%
   autoplot(global_economy) +
   labs(y = "% of GDP", title = "Egyptian exports")
 global_economy %>%
@@ -1240,11 +2054,23 @@ global_economy %>%
   autoplot()
 fit2 <- global_economy %>%
   filter(Code == "EGY") %>%
-  model(ARIMA(Exports ~ pdq(4, 0, 0)))
+  model(ARIMA(Exports ~ pdq(4,0,0)))
 report(fit2)
+#> Series: Exports 
+#> Model: ARIMA(4,0,0) w/ mean 
+#> 
+#> Coefficients:
+#>          ar1      ar2     ar3      ar4  constant
+#>       0.9861  -0.1715  0.1807  -0.3283    6.6922
+#> s.e.  0.1247   0.1865  0.1865   0.1273    0.3562
+#> 
+#> sigma^2 estimated as 7.885:  log likelihood=-140.5
+#> AIC=293.1   AICc=294.7   BIC=305.4
+
+
 ```
 
-# 9.7 ARIMA modelling in fable 
+# 9.7 ARIMA modelling in fable `r tags$a(href='https://otexts.com/fpp3/arima-r.html')` 
 
 
 ```{r}
@@ -1253,125 +2079,143 @@ report(fit2)
 global_economy %>%
   filter(Code == "CAF") %>%
   autoplot(Exports) +
-  labs(
-    title = "Central African Republic exports",
-    y = "% of GDP"
-  )
+  labs(title="Central African Republic exports",
+       y="% of GDP")
 global_economy %>%
   filter(Code == "CAF") %>%
-  gg_tsdisplay(difference(Exports), plot_type = "partial")
+  gg_tsdisplay(difference(Exports), plot_type='partial')
 caf_fit <- global_economy %>%
   filter(Code == "CAF") %>%
-  model(
-    arima210 = ARIMA(Exports ~ pdq(2, 1, 0)),
-    arima013 = ARIMA(Exports ~ pdq(0, 1, 3)),
-    stepwise = ARIMA(Exports),
-    search = ARIMA(Exports, stepwise = FALSE)
-  )
+  model(arima210 = ARIMA(Exports ~ pdq(2,1,0)),
+        arima013 = ARIMA(Exports ~ pdq(0,1,3)),
+        stepwise = ARIMA(Exports),
+        search = ARIMA(Exports, stepwise=FALSE))
 
-caf_fit %>% pivot_longer(!Country,
-  names_to = "Model name",
-  values_to = "Orders"
-)
-glance(caf_fit) %>%
-  arrange(AICc) %>%
-  select(.model:BIC)
+caf_fit %>% pivot_longer(!Country, names_to = "Model name",
+                         values_to = "Orders")
+#> # A mable: 4 x 3
+#> # Key:     Country, Model name [4]
+#>   Country                  `Model name`         Orders
+#>   <fct>                    <chr>               <model>
+#> 1 Central African Republic arima210     <ARIMA(2,1,0)>
+#> 2 Central African Republic arima013     <ARIMA(0,1,3)>
+#> 3 Central African Republic stepwise     <ARIMA(2,1,2)>
+#> 4 Central African Republic search       <ARIMA(3,1,0)>
+glance(caf_fit) %>% arrange(AICc) %>% select(.model:BIC)
+#> # A tibble: 4 × 6
+#>   .model   sigma2 log_lik   AIC  AICc   BIC
+#>   <chr>     <dbl>   <dbl> <dbl> <dbl> <dbl>
+#> 1 search     6.52   -133.  274.  275.  282.
+#> 2 arima210   6.71   -134.  275.  275.  281.
+#> 3 arima013   6.54   -133.  274.  275.  282.
+#> 4 stepwise   6.42   -132.  274.  275.  284.
 caf_fit %>%
   select(search) %>%
   gg_tsresiduals()
 augment(caf_fit) %>%
-  filter(.model == "search") %>%
+  filter(.model=='search') %>%
   features(.innov, ljung_box, lag = 10, dof = 3)
+#> # A tibble: 1 × 4
+#>   Country                  .model lb_stat lb_pvalue
+#>   <fct>                    <chr>    <dbl>     <dbl>
+#> 1 Central African Republic search    5.75     0.569
 caf_fit %>%
-  forecast(h = 5) %>%
-  filter(.model == "search") %>%
+  forecast(h=5) %>%
+  filter(.model=='search') %>%
   autoplot(global_economy)
 gg_arma(caf_fit %>% select(Country, search))
+
+
 ```
 
-# 9.9 Seasonal ARIMA models 
+# 9.9 Seasonal ARIMA models `r tags$a(href='https://otexts.com/fpp3/seasonal-arima.html')` 
 
 
 ```{r}
 
 
 leisure <- us_employment %>%
-  filter(
-    Title == "Leisure and Hospitality",
-    year(Month) > 2000
-  ) %>%
-  mutate(Employed = Employed / 1000) %>%
+  filter(Title == "Leisure and Hospitality",
+         year(Month) > 2000) %>%
+  mutate(Employed = Employed/1000) %>%
   select(Month, Employed)
 autoplot(leisure, Employed) +
-  labs(
-    title = "US employment: leisure and hospitality",
-    y = "Number of people (millions)"
-  )
+  labs(title = "US employment: leisure and hospitality",
+       y="Number of people (millions)")
 leisure %>%
   gg_tsdisplay(difference(Employed, 12),
-    plot_type = "partial", lag = 36
-  ) +
-  labs(title = "Seasonally differenced", y = "")
+               plot_type='partial', lag=36) +
+  labs(title="Seasonally differenced", y="")
 leisure %>%
   gg_tsdisplay(difference(Employed, 12) %>% difference(),
-    plot_type = "partial", lag = 36
-  ) +
-  labs(title = "Double differenced", y = "")
+               plot_type='partial', lag=36) +
+  labs(title = "Double differenced", y="")
 fit <- leisure %>%
   model(
-    arima012011 = ARIMA(Employed ~ pdq(0, 1, 2) + PDQ(0, 1, 1)),
-    arima210011 = ARIMA(Employed ~ pdq(2, 1, 0) + PDQ(0, 1, 1)),
+    arima012011 = ARIMA(Employed ~ pdq(0,1,2) + PDQ(0,1,1)),
+    arima210011 = ARIMA(Employed ~ pdq(2,1,0) + PDQ(0,1,1)),
     auto = ARIMA(Employed, stepwise = FALSE, approx = FALSE)
   )
-fit %>% pivot_longer(everything(),
-  names_to = "Model name",
-  values_to = "Orders"
-)
-glance(fit) %>%
-  arrange(AICc) %>%
-  select(.model:BIC)
-fit %>%
-  select(auto) %>%
-  gg_tsresiduals(lag = 36)
+fit %>% pivot_longer(everything(), names_to = "Model name",
+                     values_to = "Orders")
+#> # A mable: 3 x 2
+#> # Key:     Model name [3]
+#>   `Model name`                    Orders
+#>   <chr>                          <model>
+#> 1 arima012011  <ARIMA(0,1,2)(0,1,1)[12]>
+#> 2 arima210011  <ARIMA(2,1,0)(0,1,1)[12]>
+#> 3 auto         <ARIMA(2,1,0)(1,1,1)[12]>
+glance(fit) %>% arrange(AICc) %>% select(.model:BIC)
+#> # A tibble: 3 × 6
+#>   .model       sigma2 log_lik   AIC  AICc   BIC
+#>   <chr>         <dbl>   <dbl> <dbl> <dbl> <dbl>
+#> 1 auto        0.00142    395. -780. -780. -763.
+#> 2 arima210011 0.00145    392. -776. -776. -763.
+#> 3 arima012011 0.00146    391. -775. -775. -761.
+fit %>% select(auto) %>% gg_tsresiduals(lag=36)
 augment(fit) %>%
   filter(.model == "auto") %>%
-  features(.innov, ljung_box, lag = 24, dof = 4)
-forecast(fit, h = 36) %>%
-  filter(.model == "auto") %>%
+  features(.innov, ljung_box, lag=24, dof=4)
+#> # A tibble: 1 × 3
+#>   .model lb_stat lb_pvalue
+#>   <chr>    <dbl>     <dbl>
+#> 1 auto      16.6     0.680
+forecast(fit, h=36) %>%
+  filter(.model=='auto') %>%
   autoplot(leisure) +
-  labs(
-    title = "US employment: leisure and hospitality",
-    y = "Number of people (millions)"
-  )
+  labs(title = "US employment: leisure and hospitality",
+       y="Number of people (millions)")
 h02 <- PBS %>%
   filter(ATC2 == "H02") %>%
-  summarise(Cost = sum(Cost) / 1e6)
+  summarise(Cost = sum(Cost)/1e6)
 h02 %>%
   mutate(log(Cost)) %>%
   pivot_longer(-Month) %>%
   ggplot(aes(x = Month, y = value)) +
   geom_line() +
   facet_grid(name ~ ., scales = "free_y") +
-  labs(y = "", title = "Corticosteroid drug scripts (H02)")
+  labs(y="", title="Corticosteroid drug scripts (H02)")
 h02 %>% gg_tsdisplay(difference(log(Cost), 12),
-  plot_type = "partial", lag_max = 24
-)
+                     plot_type='partial', lag_max = 24)
 fit <- h02 %>%
-  model(ARIMA(log(Cost) ~ 0 + pdq(3, 0, 1) + PDQ(0, 1, 2)))
-fit %>% gg_tsresiduals(lag_max = 36)
+  model(ARIMA(log(Cost) ~ 0 + pdq(3,0,1) + PDQ(0,1,2)))
+fit %>% gg_tsresiduals(lag_max=36)
 augment(fit) %>%
   features(.innov, ljung_box, lag = 36, dof = 6)
+#> # A tibble: 1 × 3
+#>   .model                                             lb_stat lb_pvalue
+#>   <chr>                                                <dbl>     <dbl>
+#> 1 ARIMA(log(Cost) ~ 0 + pdq(3, 0, 1) + PDQ(0, 1, 2))    50.7    0.0104
 h02 %>%
-  model(ARIMA(log(Cost) ~ 0 + pdq(3, 0, 1) + PDQ(0, 1, 2))) %>%
+  model(ARIMA(log(Cost) ~ 0 + pdq(3,0,1) + PDQ(0,1,2))) %>%
   forecast() %>%
   autoplot(h02) +
-  labs(
-    y = " $AU (millions)",
-    title = "Corticosteroid drug scripts (H02) sales"
-  )
-```
+  labs(y=" $AU (millions)",
+       title="Corticosteroid drug scripts (H02) sales")
 
-# 9.10 ARIMA vs ETS 
+
+```
+# 9.10 ARIMA vs ETS `r tags$a(href='https://otexts.com/fpp3/arima-ets.html')` 
 
 
 ```{r}
@@ -1379,7 +2223,7 @@ h02 %>%
 
 aus_economy <- global_economy %>%
   filter(Code == "AUS") %>%
-  mutate(Population = Population / 1e6)
+  mutate(Population = Population/1e6)
 
 aus_economy %>%
   slice(-n()) %>%
@@ -1391,79 +2235,145 @@ aus_economy %>%
   forecast(h = 1) %>%
   accuracy(aus_economy) %>%
   select(.model, RMSE:MAPE)
+#> # A tibble: 2 × 5
+#>   .model              RMSE    MAE   MPE  MAPE
+#>   <chr>              <dbl>  <dbl> <dbl> <dbl>
+#> 1 ARIMA(Population) 0.194  0.0789 0.277 0.509
+#> 2 ETS(Population)   0.0774 0.0543 0.112 0.327
 aus_economy %>%
   model(ETS(Population)) %>%
   forecast(h = "5 years") %>%
   autoplot(aus_economy %>% filter(Year >= 2000)) +
-  labs(
-    title = "Australian population",
-    y = "People (millions)"
-  )
+  labs(title = "Australian population",
+       y = "People (millions)")
 cement <- aus_production %>%
   select(Cement) %>%
   filter_index("1988 Q1" ~ .)
 train <- cement %>% filter_index(. ~ "2007 Q4")
 fit_arima <- train %>% model(ARIMA(Cement))
 report(fit_arima)
+#> Series: Cement 
+#> Model: ARIMA(1,0,1)(2,1,1)[4] w/ drift 
+#> 
+#> Coefficients:
+#>          ar1      ma1   sar1     sar2     sma1  constant
+#>       0.8886  -0.2366  0.081  -0.2345  -0.8979     5.388
+#> s.e.  0.0842   0.1334  0.157   0.1392   0.1780     1.484
+#> 
+#> sigma^2 estimated as 11456:  log likelihood=-463.5
+#> AIC=941   AICc=942.7   BIC=957.4
 fit_arima %>% gg_tsresiduals(lag_max = 16)
 augment(fit_arima) %>%
   features(.innov, ljung_box, lag = 16, dof = 6)
+#> # A tibble: 1 × 3
+#>   .model        lb_stat lb_pvalue
+#>   <chr>           <dbl>     <dbl>
+#> 1 ARIMA(Cement)    6.37     0.783
 fit_ets <- train %>% model(ETS(Cement))
 report(fit_ets)
+#> Series: Cement 
+#> Model: ETS(M,N,M) 
+#>   Smoothing parameters:
+#>     alpha = 0.7534 
+#>     gamma = 1e-04 
+#> 
+#>   Initial states:
+#>  l[0]  s[0] s[-1] s[-2]  s[-3]
+#>  1695 1.031 1.045 1.011 0.9122
+#> 
+#>   sigma^2:  0.0034
+#> 
+#>  AIC AICc  BIC 
+#> 1104 1106 1121
 fit_ets %>%
   gg_tsresiduals(lag_max = 16)
 augment(fit_ets) %>%
   features(.innov, ljung_box, lag = 16, dof = 6)
+#> # A tibble: 1 × 3
+#>   .model      lb_stat lb_pvalue
+#>   <chr>         <dbl>     <dbl>
+#> 1 ETS(Cement)    10.0     0.438
 # Generate forecasts and compare accuracy over the test set
 bind_rows(
-  fit_arima %>% accuracy(),
-  fit_ets %>% accuracy(),
-  fit_arima %>% forecast(h = 10) %>% accuracy(cement),
-  fit_ets %>% forecast(h = 10) %>% accuracy(cement)
-) %>%
+    fit_arima %>% accuracy(),
+    fit_ets %>% accuracy(),
+    fit_arima %>% forecast(h = 10) %>% accuracy(cement),
+    fit_ets %>% forecast(h = 10) %>% accuracy(cement)
+  ) %>%
   select(-ME, -MPE, -ACF1)
+#> # A tibble: 4 × 7
+#>   .model        .type     RMSE   MAE  MAPE  MASE RMSSE
+#>   <chr>         <chr>    <dbl> <dbl> <dbl> <dbl> <dbl>
+#> 1 ARIMA(Cement) Training  100.  79.9  4.37 0.546 0.582
+#> 2 ETS(Cement)   Training  103.  80.0  4.41 0.547 0.596
+#> 3 ARIMA(Cement) Test      216. 186.   8.68 1.27  1.26 
+#> 4 ETS(Cement)   Test      222. 191.   8.85 1.30  1.29
 cement %>%
   model(ARIMA(Cement)) %>%
-  forecast(h = "3 years") %>%
+  forecast(h="3 years") %>%
   autoplot(cement) +
-  labs(
-    title = "Cement production in Australia",
-    y = "Tonnes ('000)"
-  )
-```
+  labs(title = "Cement production in Australia",
+       y = "Tonnes ('000)")
 
-# 10.2 Regression with ARIMA errors using fable 
+
+```
+# 9.11 Exercises `r tags$a(href='https://otexts.com/fpp3/arima-exercises.html')` 
 
 
 ```{r}
 
 
-ARIMA(y ~ x + pdq(1, 1, 0))
+y <- numeric(100)
+e <- rnorm(100)
+for(i in 2:100)
+  y[i] <- 0.6*y[i-1] + e[i]
+sim <- tsibble(idx = seq_len(100), y = y, index = idx)
+install.packages("Quandl")
+y <- as_tsibble(Quandl::Quandl("?????"), index = Date)
+
+
+```
+
+
+
+# 10.2 Regression with ARIMA errors using fable `r tags$a(href='https://otexts.com/fpp3/regarima.html')` 
+
+
+```{r}
+
+
+ARIMA(y ~ x + pdq(1,1,0))
 us_change %>%
   pivot_longer(c(Consumption, Income),
-    names_to = "var", values_to = "value"
-  ) %>%
+               names_to = "var", values_to = "value") %>%
   ggplot(aes(x = Quarter, y = value)) +
   geom_line() +
   facet_grid(vars(var), scales = "free_y") +
-  labs(
-    title = "US consumption and personal income",
-    y = "Quarterly % change"
-  )
+  labs(title = "US consumption and personal income",
+       y = "Quarterly % change")
 fit <- us_change %>%
   model(ARIMA(Consumption ~ Income))
 report(fit)
+#> Series: Consumption 
+#> Model: LM w/ ARIMA(1,0,2) errors 
+#> 
+#> Coefficients:
+#>          ar1      ma1     ma2  Income  intercept
+#>       0.7070  -0.6172  0.2066  0.1976     0.5949
+#> s.e.  0.1068   0.1218  0.0741  0.0462     0.0850
+#> 
+#> sigma^2 estimated as 0.3113:  log likelihood=-163
+#> AIC=338.1   AICc=338.5   BIC=357.8
 bind_rows(
-  `Regression residuals` =
-    as_tibble(residuals(fit, type = "regression")),
-  `ARIMA residuals` =
-    as_tibble(residuals(fit, type = "innovation")),
-  .id = "type"
-) %>%
+    `Regression residuals` =
+        as_tibble(residuals(fit, type = "regression")),
+    `ARIMA residuals` =
+        as_tibble(residuals(fit, type = "innovation")),
+    .id = "type"
+  ) %>%
   mutate(
-    type = factor(type, levels = c(
-      "Regression residuals", "ARIMA residuals"
-    ))
+    type = factor(type, levels=c(
+      "Regression residuals", "ARIMA residuals"))
   ) %>%
   ggplot(aes(x = Quarter, y = .resid)) +
   geom_line() +
@@ -1471,9 +2381,14 @@ bind_rows(
 fit %>% gg_tsresiduals()
 augment(fit) %>%
   features(.innov, ljung_box, dof = 5, lag = 8)
-```
+#> # A tibble: 1 × 3
+#>   .model                      lb_stat lb_pvalue
+#>   <chr>                         <dbl>     <dbl>
+#> 1 ARIMA(Consumption ~ Income)    5.21     0.157
 
-# 10.3 Forecasting 
+
+```
+# 10.3 Forecasting `r tags$a(href='https://otexts.com/fpp3/forecasting.html')` 
 
 
 ```{r}
@@ -1501,22 +2416,23 @@ vic_elec_daily <- vic_elec %>%
 vic_elec_daily %>%
   ggplot(aes(x = Temperature, y = Demand, colour = Day_Type)) +
   geom_point() +
-  labs(
-    y = "Electricity demand (GW)",
-    x = "Maximum daily temperature"
-  )
+  labs(y = "Electricity demand (GW)",
+       x = "Maximum daily temperature")
 vic_elec_daily %>%
   pivot_longer(c(Demand, Temperature)) %>%
   ggplot(aes(x = Date, y = value)) +
   geom_line() +
-  facet_grid(name ~ ., scales = "free_y") +
-  ylab("")
+  facet_grid(name ~ ., scales = "free_y") + ylab("")
 fit <- vic_elec_daily %>%
   model(ARIMA(Demand ~ Temperature + I(Temperature^2) +
-    (Day_Type == "Weekday")))
+                (Day_Type == "Weekday")))
 fit %>% gg_tsresiduals()
 augment(fit) %>%
   features(.innov, ljung_box, dof = 9, lag = 14)
+#> # A tibble: 1 × 3
+#>   .model                                                     lb_stat lb_pvalue
+#>   <chr>                                                        <dbl>     <dbl>
+#> 1 "ARIMA(Demand ~ Temperature + I(Temperature^2) + (Day_Typ…    28.4 0.0000304
 vic_elec_future <- new_data(vic_elec_daily, 14) %>%
   mutate(
     Temperature = 26,
@@ -1529,13 +2445,12 @@ vic_elec_future <- new_data(vic_elec_daily, 14) %>%
   )
 forecast(fit, vic_elec_future) %>%
   autoplot(vic_elec_daily) +
-  labs(
-    title = "Daily electricity demand: Victoria",
-    y = "GW"
-  )
-```
+  labs(title="Daily electricity demand: Victoria",
+       y="GW")
 
-# 10.4 Stochastic and deterministic trends 
+
+```
+# 10.4 Stochastic and deterministic trends `r tags$a(href='https://otexts.com/fpp3/stochastic-and-deterministic-trends.html')` 
 
 
 ```{r}
@@ -1543,32 +2458,47 @@ forecast(fit, vic_elec_future) %>%
 
 aus_airpassengers %>%
   autoplot(Passengers) +
-  labs(
-    y = "Passengers (millions)",
-    title = "Total annual air passengers"
-  )
+  labs(y = "Passengers (millions)",
+       title = "Total annual air passengers")
 fit_deterministic <- aus_airpassengers %>%
   model(deterministic = ARIMA(Passengers ~ 1 + trend() +
-    pdq(d = 0)))
+                                pdq(d = 0)))
 report(fit_deterministic)
+#> Series: Passengers 
+#> Model: LM w/ ARIMA(1,0,0) errors 
+#> 
+#> Coefficients:
+#>          ar1  trend()  intercept
+#>       0.9564   1.4151     0.9014
+#> s.e.  0.0362   0.1972     7.0751
+#> 
+#> sigma^2 estimated as 4.343:  log likelihood=-100.88
+#> AIC=209.77   AICc=210.72   BIC=217.17
 fit_stochastic <- aus_airpassengers %>%
   model(stochastic = ARIMA(Passengers ~ pdq(d = 1)))
 report(fit_stochastic)
+#> Series: Passengers 
+#> Model: ARIMA(0,1,0) w/ drift 
+#> 
+#> Coefficients:
+#>       constant
+#>         1.4191
+#> s.e.    0.3014
+#> 
+#> sigma^2 estimated as 4.271:  log likelihood=-98.16
+#> AIC=200.31   AICc=200.59   BIC=203.97
 aus_airpassengers %>%
   autoplot(Passengers) +
   autolayer(fit_stochastic %>% forecast(h = 20),
-    colour = "#0072B2", level = 95
-  ) +
+    colour = "#0072B2", level = 95) +
   autolayer(fit_deterministic %>% forecast(h = 20),
-    colour = "#D55E00", alpha = 0.65, level = 95
-  ) +
-  labs(
-    y = "Air passengers (millions)",
-    title = "Forecasts from trend models"
-  )
-```
+    colour = "#D55E00", alpha = 0.65, level = 95) +
+  labs(y = "Air passengers (millions)",
+       title = "Forecasts from trend models")
 
-# 10.5 Dynamic harmonic regression 
+
+```
+# 10.5 Dynamic harmonic regression `r tags$a(href='https://otexts.com/fpp3/dhr.html')` 
 
 
 ```{r}
@@ -1582,20 +2512,33 @@ aus_cafe <- aus_retail %>%
   summarise(Turnover = sum(Turnover))
 
 fit <- model(aus_cafe,
-  `K = 1` = ARIMA(log(Turnover) ~ fourier(K = 1) + PDQ(0, 0, 0)),
-  `K = 2` = ARIMA(log(Turnover) ~ fourier(K = 2) + PDQ(0, 0, 0)),
-  `K = 3` = ARIMA(log(Turnover) ~ fourier(K = 3) + PDQ(0, 0, 0)),
-  `K = 4` = ARIMA(log(Turnover) ~ fourier(K = 4) + PDQ(0, 0, 0)),
-  `K = 5` = ARIMA(log(Turnover) ~ fourier(K = 5) + PDQ(0, 0, 0)),
-  `K = 6` = ARIMA(log(Turnover) ~ fourier(K = 6) + PDQ(0, 0, 0))
+  `K = 1` = ARIMA(log(Turnover) ~ fourier(K=1) + PDQ(0,0,0)),
+  `K = 2` = ARIMA(log(Turnover) ~ fourier(K=2) + PDQ(0,0,0)),
+  `K = 3` = ARIMA(log(Turnover) ~ fourier(K=3) + PDQ(0,0,0)),
+  `K = 4` = ARIMA(log(Turnover) ~ fourier(K=4) + PDQ(0,0,0)),
+  `K = 5` = ARIMA(log(Turnover) ~ fourier(K=5) + PDQ(0,0,0)),
+  `K = 6` = ARIMA(log(Turnover) ~ fourier(K=6) + PDQ(0,0,0))
 )
 
+fit %>%
+  forecast(h = "2 years") %>%
+  autoplot(aus_cafe, level = 95) +
+  facet_wrap(vars(.model), ncol = 2) +
+  guides(colour = "none", fill = "none", level = "none") +
+  geom_label(
+    aes(x = yearmonth("2007 Jan"), y = 4250,
+        label = paste0("AICc = ", format(AICc))),
+    data = glance(fit)
+  ) +
+  labs(title= "Total monthly eating-out expenditure",
+       y="$ billions")
+
+
 ```
+# 10.6 Lagged predictors `r tags$a(href='https://otexts.com/fpp3/lagged-predictors.html')` 
 
-# 10.6 Lagged predictors 
 
-
-```{r,eval=FALSE}
+```{r}
 
 
 insurance %>%
@@ -1611,19 +2554,36 @@ fit <- insurance %>%
   model(
     lag0 = ARIMA(Quotes ~ pdq(d = 0) + TVadverts),
     lag1 = ARIMA(Quotes ~ pdq(d = 0) +
-      TVadverts + lag(TVadverts)),
+                 TVadverts + lag(TVadverts)),
     lag2 = ARIMA(Quotes ~ pdq(d = 0) +
-      TVadverts + lag(TVadverts) +
-      lag(TVadverts, 2)),
+                 TVadverts + lag(TVadverts) +
+                 lag(TVadverts, 2)),
     lag3 = ARIMA(Quotes ~ pdq(d = 0) +
-      TVadverts + lag(TVadverts) +
-      lag(TVadverts, 2) + lag(TVadverts, 3))
+                 TVadverts + lag(TVadverts) +
+                 lag(TVadverts, 2) + lag(TVadverts, 3))
   )
 glance(fit)
+#> # A tibble: 4 × 8
+#>   .model sigma2 log_lik   AIC  AICc   BIC ar_roots  ma_roots 
+#>   <chr>   <dbl>   <dbl> <dbl> <dbl> <dbl> <list>    <list>   
+#> 1 lag0    0.265   -28.3  66.6  68.3  75.0 <cpl [2]> <cpl [0]>
+#> 2 lag1    0.209   -24.0  58.1  59.9  66.5 <cpl [1]> <cpl [1]>
+#> 3 lag2    0.215   -24.0  60.0  62.6  70.2 <cpl [1]> <cpl [1]>
+#> 4 lag3    0.206   -22.2  60.3  65.0  73.8 <cpl [1]> <cpl [1]>
 fit_best <- insurance %>%
   model(ARIMA(Quotes ~ pdq(d = 0) +
-    TVadverts + lag(TVadverts)))
+              TVadverts + lag(TVadverts)))
 report(fit_best)
+#> Series: Quotes 
+#> Model: LM w/ ARIMA(1,0,2) errors 
+#> 
+#> Coefficients:
+#>          ar1     ma1     ma2  TVadverts  lag(TVadverts)  intercept
+#>       0.5123  0.9169  0.4591     1.2527          0.1464     2.1554
+#> s.e.  0.1849  0.2051  0.1895     0.0588          0.0531     0.8595
+#> 
+#> sigma^2 estimated as 0.2166:  log likelihood=-23.94
+#> AIC=61.88   AICc=65.38   BIC=73.7
 insurance_future <- new_data(insurance, 20) %>%
   mutate(TVadverts = 8)
 fit_best %>%
@@ -1633,9 +2593,34 @@ fit_best %>%
     y = "Quotes",
     title = "Forecast quotes with future advertising set to 8"
   )
+
+
+```
+# 10.7 Exercises `r tags$a(href='https://otexts.com/fpp3/dynamic-exercises.html')` 
+
+
+```{r}
+
+
+vic_elec_daily <- vic_elec %>%
+  filter(year(Time) == 2014) %>%
+  index_by(Date = date(Time)) %>%
+  summarise(
+    Demand = sum(Demand)/1e3,
+    Temperature = max(Temperature),
+    Holiday = any(Holiday)) %>%
+  mutate(
+    Temp2 = I(pmax(Temperature-20,0)),
+    Day_Type = case_when(
+      Holiday ~ "Holiday",
+      wday(Date) %in% 2:6 ~ "Weekday",
+      TRUE ~ "Weekend"))
+
+
 ```
 
-# 11.1 Hierarchical and grouped time series 
+
+# 11.1 Hierarchical and grouped time series `r tags$a(href='https://otexts.com/fpp3/hts.html')` 
 
 
 ```{r}
@@ -1654,56 +2639,59 @@ tourism <- tsibble::tourism %>%
 tourism_hts <- tourism %>%
   aggregate_key(State / Region, Trips = sum(Trips))
 tourism_hts
+#> # A tsibble: 6,800 x 4 [1Q]
+#> # Key:       State, Region [85]
+#>    Quarter State        Region        Trips
+#>      <qtr> <chr*>       <chr*>        <dbl>
+#>  1 1998 Q1 <aggregated> <aggregated> 23182.
+#>  2 1998 Q2 <aggregated> <aggregated> 20323.
+#>  3 1998 Q3 <aggregated> <aggregated> 19827.
+#>  4 1998 Q4 <aggregated> <aggregated> 20830.
+#>  5 1999 Q1 <aggregated> <aggregated> 22087.
+#>  6 1999 Q2 <aggregated> <aggregated> 21458.
+#>  7 1999 Q3 <aggregated> <aggregated> 19914.
+#>  8 1999 Q4 <aggregated> <aggregated> 20028.
+#>  9 2000 Q1 <aggregated> <aggregated> 22339.
+#> 10 2000 Q2 <aggregated> <aggregated> 19941.
+#> # … with 6,790 more rows
 tourism_hts %>%
   filter(is_aggregated(Region)) %>%
   autoplot(Trips) +
-  labs(
-    y = "Trips ('000)",
-    title = "Australian tourism: national and states"
-  ) +
+  labs(y = "Trips ('000)",
+       title = "Australian tourism: national and states") +
   facet_wrap(vars(State), scales = "free_y", ncol = 3) +
   theme(legend.position = "none")
 prison <- readr::read_csv("https://OTexts.com/fpp3/extrafiles/prison_population.csv") %>%
   mutate(Quarter = yearquarter(Date)) %>%
-  select(-Date) %>%
-  as_tsibble(
-    key = c(Gender, Legal, State, Indigenous),
-    index = Quarter
-  ) %>%
+  select(-Date)  %>%
+  as_tsibble(key = c(Gender, Legal, State, Indigenous),
+             index = Quarter) %>%
   relocate(Quarter)
 prison_gts <- prison %>%
-  aggregate_key(Gender * Legal * State, Count = sum(Count) / 1e3)
+  aggregate_key(Gender * Legal * State, Count = sum(Count)/1e3)
 prison_gts %>%
-  filter(
-    !is_aggregated(Gender), is_aggregated(Legal),
-    is_aggregated(State)
-  ) %>%
+  filter(!is_aggregated(Gender), is_aggregated(Legal),
+         is_aggregated(State)) %>%
   autoplot(Count) +
   labs(y = "Number of prisoners ('000)")
 prison_gts %>%
-  filter(
-    !is_aggregated(Gender), !is_aggregated(Legal),
-    !is_aggregated(State)
-  ) %>%
+  filter(!is_aggregated(Gender), !is_aggregated(Legal),
+         !is_aggregated(State)) %>%
   mutate(Gender = as.character(Gender)) %>%
-  ggplot(aes(
-    x = Quarter, y = Count,
-    group = Gender, colour = Gender
-  )) +
+  ggplot(aes(x = Quarter, y = Count,
+             group = Gender, colour=Gender)) +
   stat_summary(fun = sum, geom = "line") +
-  labs(
-    title = "Prison population by state and gender",
-    y = "Number of prisoners ('000)"
-  ) +
+  labs(title = "Prison population by state and gender",
+       y = "Number of prisoners ('000)") +
   facet_wrap(~ as.character(State),
-    nrow = 1, scales = "free_y"
-  ) +
+             nrow = 1, scales = "free_y") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1))
 tourism_full <- tourism %>%
-  aggregate_key((State / Region) * Purpose, Trips = sum(Trips))
-```
+  aggregate_key((State/Region) * Purpose, Trips = sum(Trips))
 
-# 11.2 Single level approaches 
+
+```
+# 11.2 Single level approaches `r tags$a(href='https://otexts.com/fpp3/single-level.html')` 
 
 
 ```{r}
@@ -1723,17 +2711,35 @@ tourism_states %>%
   model(ets = ETS(Trips)) %>%
   reconcile(bu = bottom_up(ets)) %>%
   forecast()
+#> # A fable: 144 x 5 [1Q]
+#> # Key:     State, .model [18]
+#>    State  .model Quarter         Trips .mean
+#>    <chr*> <chr>    <qtr>        <dist> <dbl>
+#>  1 ACT    ets    2018 Q1  N(701, 7651)  701.
+#>  2 ACT    ets    2018 Q2  N(717, 8032)  717.
+#>  3 ACT    ets    2018 Q3  N(734, 8440)  734.
+#>  4 ACT    ets    2018 Q4  N(750, 8882)  750.
+#>  5 ACT    ets    2019 Q1  N(767, 9368)  767.
+#>  6 ACT    ets    2019 Q2  N(784, 9905)  784.
+#>  7 ACT    ets    2019 Q3 N(800, 10503)  800.
+#>  8 ACT    ets    2019 Q4 N(817, 11171)  817.
+#>  9 ACT    bu     2018 Q1  N(701, 7651)  701.
+#> 10 ACT    bu     2018 Q2  N(717, 8032)  717.
+#> # … with 134 more rows
+data %>% aggregate_key() %>% model() %>%
+  reconcile() %>% forecast()
+
 
 ```
 
-# 11.4 Forecasting Australian domestic tourism 
+# 11.4 Forecasting Australian domestic tourism `r tags$a(href='https://otexts.com/fpp3/tourism.html')` 
 
 
 ```{r}
 
 
 tourism_full <- tourism %>%
-  aggregate_key((State / Region) * Purpose, Trips = sum(Trips))
+  aggregate_key((State/Region) * Purpose, Trips = sum(Trips))
 
 fit <- tourism_full %>%
   filter(year(Quarter) <= 2015) %>%
@@ -1768,427 +2774,69 @@ fc %>%
   ) %>%
   group_by(.model) %>%
   summarise(rmse = mean(rmse), mase = mean(mase))
+#> # A tibble: 4 × 3
+#>   .model  rmse  mase
+#>   <chr>  <dbl> <dbl>
+#> 1 base   1721.  1.53
+#> 2 bu     3070.  3.16
+#> 3 mint   2157.  2.09
+#> 4 ols    1804.  1.63
+
+
 ```
 
-<!-- # 12.3 Vector autoregressions  -->
+# 11.6 Forecasting Australian prison population `r tags$a(href='https://otexts.com/fpp3/prison.html')` 
 
 
-<!-- ```{r} -->
+```{r}
 
 
-<!-- fit <- us_change %>% -->
-<!--   model( -->
-<!--     aicc = VAR(vars(Consumption, Income)), -->
-<!--     bic = VAR(vars(Consumption, Income), ic = "bic") -->
-<!--   ) -->
-<!-- fit -->
-<!-- glance(fit) -->
-<!-- fit %>% -->
-<!--   augment() %>% -->
-<!--   ACF(.innov) %>% -->
-<!--   autoplot() -->
-<!-- fit %>% -->
-<!--   select(aicc) %>% -->
-<!--   forecast() %>% -->
-<!--   autoplot(us_change %>% filter(year(Quarter) > 2010)) -->
-<!-- ``` -->
-<!-- # 12.4 Neural network models  -->
+fit <- prison_gts %>%
+  filter(year(Quarter) <= 2014) %>%
+  model(base = ETS(Count)) %>%
+  reconcile(
+    bottom_up = bottom_up(base),
+    MinT = min_trace(base, method = "mint_shrink")
+  )
+fc <- fit %>% forecast(h = 8)
+fc %>%
+  filter(is_aggregated(State), is_aggregated(Gender),
+         is_aggregated(Legal)) %>%
+  autoplot(prison_gts, alpha = 0.7, level = 90) +
+  labs(y = "Number of prisoners ('000)",
+       title = "Australian prison population (total)")
+fc %>%
+  filter(
+    .model %in% c("base", "MinT"),
+    !is_aggregated(State), is_aggregated(Legal),
+    is_aggregated(Gender)
+  ) %>%
+  autoplot(
+    prison_gts %>% filter(year(Quarter) >= 2010),
+    alpha = 0.7, level = 90
+  ) +
+  labs(title = "Prison population (by state)",
+       y = "Number of prisoners ('000)") +
+  facet_wrap(vars(State), scales = "free_y", ncol = 4) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+fc %>%
+  filter(is_aggregated(State), is_aggregated(Gender),
+         is_aggregated(Legal)) %>%
+  accuracy(data = prison_gts,
+           measures = list(mase = MASE,
+                           ss = skill_score(CRPS)
+                           )
+           ) %>%
+  group_by(.model) %>%
+  summarise(mase = mean(mase), sspc = mean(ss) * 100)
+#> # A tibble: 3 × 3
+#>   .model     mase  sspc
+#>   <chr>     <dbl> <dbl>
+#> 1 base      1.72   55.9
+#> 2 bottom_up 1.84   33.5
+#> 3 MinT      0.895  76.8
 
 
-<!-- ```{r} -->
+```
 
 
-<!-- sunspots <- sunspot.year %>% as_tsibble() -->
-<!-- sunspots %>% -->
-<!--   model(NNETAR(sqrt(value))) %>% -->
-<!--   forecast(h = 30) %>% -->
-<!--   autoplot(sunspots) + -->
-<!--   labs( -->
-<!--     x = "Year", y = "Counts", -->
-<!--     title = "Yearly sunspots" -->
-<!--   ) -->
-<!-- fit %>% -->
-<!--   generate(times = 9, h = 30) %>% -->
-<!--   autoplot(.sim) + -->
-<!--   autolayer(sunspots, value) + -->
-<!--   theme(legend.position = "none") -->
-<!-- ``` -->
-<!-- # 12.5 Bootstrapping and bagging  -->
-
-
-<!-- ```{r} -->
-
-
-<!-- cement <- aus_production %>% -->
-<!--   filter(year(Quarter) >= 1988) %>% -->
-<!--   select(Quarter, Cement) -->
-<!-- cement_stl <- cement %>% -->
-<!--   model(stl = STL(Cement)) -->
-<!-- cement_stl %>% -->
-<!--   components() %>% -->
-<!--   autoplot() -->
-<!-- cement_stl %>% -->
-<!--   generate( -->
-<!--     new_data = cement, times = 10, -->
-<!--     bootstrap_block_size = 8 -->
-<!--   ) %>% -->
-<!--   autoplot(.sim) + -->
-<!--   autolayer(cement, Cement) + -->
-<!--   guides(colour = "none") + -->
-<!--   labs( -->
-<!--     title = "Cement production: Bootstrapped series", -->
-<!--     y = "Tonnes ('000)" -->
-<!--   ) -->
-<!-- sim <- cement_stl %>% -->
-<!--   generate( -->
-<!--     new_data = cement, times = 100, -->
-<!--     bootstrap_block_size = 8 -->
-<!--   ) %>% -->
-<!--   select(-.model, -Cement) -->
-<!-- ets_forecasts <- sim %>% -->
-<!--   model(ets = ETS(.sim)) %>% -->
-<!--   forecast(h = 12) -->
-<!-- ets_forecasts %>% -->
-<!--   update_tsibble(key = .rep) %>% -->
-<!--   autoplot(.mean) + -->
-<!--   autolayer(cement, Cement) + -->
-<!--   guides(colour = "none") + -->
-<!--   labs( -->
-<!--     title = "Cement production: bootstrapped forecasts", -->
-<!--     y = "Tonnes ('000)" -->
-<!--   ) -->
-<!-- bagged <- ets_forecasts %>% -->
-<!--   summarise(bagged_mean = mean(.mean)) -->
-<!-- cement %>% -->
-<!--   model(ets = ETS(Cement)) %>% -->
-<!--   forecast(h = 12) %>% -->
-<!--   autoplot(cement) + -->
-<!--   autolayer(bagged, bagged_mean, col = "#D55E00") + -->
-<!--   labs( -->
-<!--     title = "Cement production in Australia", -->
-<!--     y = "Tonnes ('000)" -->
-<!--   ) -->
-<!-- ``` -->
-
-
-
-<!-- # 13.1 Weekly, daily and sub-daily data  -->
-
-
-<!-- ```{r} -->
-
-
-<!-- my_dcmp_spec <- decomposition_model( -->
-<!--   STL(Barrels), -->
-<!--   ETS(season_adjust ~ season("N")) -->
-<!-- ) -->
-<!-- us_gasoline %>% -->
-<!--   model(stl_ets = my_dcmp_spec) %>% -->
-<!--   forecast(h = "2 years") %>% -->
-<!--   autoplot(us_gasoline) + -->
-<!--   labs( -->
-<!--     y = "Millions of barrels per day", -->
-<!--     title = "Weekly US gasoline production" -->
-<!--   ) -->
-<!-- gas_dhr <- us_gasoline %>% -->
-<!--   model(dhr = ARIMA(Barrels ~ PDQ(0, 0, 0) + fourier(K = 6))) -->
-<!-- gas_dhr %>% -->
-<!--   forecast(h = "2 years") %>% -->
-<!--   autoplot(us_gasoline) + -->
-<!--   labs( -->
-<!--     y = "Millions of barrels per day", -->
-<!--     title = "Weekly US gasoline production" -->
-<!--   ) -->
-<!-- ``` -->
-<!-- # 13.2 Time series of counts  -->
-
-
-<!-- ```{r} -->
-
-
-<!-- j06 <- PBS %>% -->
-<!--   filter(ATC2 == "J06") %>% -->
-<!--   summarise(Scripts = sum(Scripts)) -->
-
-<!-- j06 %>% autoplot(Scripts) + -->
-<!--   labs( -->
-<!--     y = "Number of scripts", -->
-<!--     title = "Sales for immune sera and immunoglobulins" -->
-<!--   ) -->
-<!-- j06 %>% -->
-<!--   model(CROSTON(Scripts)) %>% -->
-<!--   forecast(h = 6) -->
-<!-- ``` -->
-<!-- # 13.3 Ensuring forecasts stay within limits  -->
-
-
-<!-- ```{r} -->
-
-
-<!-- egg_prices <- prices %>% filter(!is.na(eggs)) -->
-<!-- egg_prices %>% -->
-<!--   model(ETS(log(eggs) ~ trend("A"))) %>% -->
-<!--   forecast(h = 50) %>% -->
-<!--   autoplot(egg_prices) + -->
-<!--   labs( -->
-<!--     title = "Annual egg prices", -->
-<!--     y = "$US (in cents adjusted for inflation) " -->
-<!--   ) -->
-<!-- scaled_logit <- function(x, lower = 0, upper = 1) { -->
-<!--   log((x - lower) / (upper - x)) -->
-<!-- } -->
-<!-- inv_scaled_logit <- function(x, lower = 0, upper = 1) { -->
-<!--   (upper - lower) * exp(x) / (1 + exp(x)) + lower -->
-<!-- } -->
-<!-- my_scaled_logit <- new_transformation( -->
-<!--   scaled_logit, inv_scaled_logit -->
-<!-- ) -->
-<!-- egg_prices %>% -->
-<!--   model( -->
-<!--     ETS(my_scaled_logit(eggs, lower = 50, upper = 400) -->
-<!--     ~ trend("A")) -->
-<!--   ) %>% -->
-<!--   forecast(h = 50) %>% -->
-<!--   autoplot(egg_prices) + -->
-<!--   labs( -->
-<!--     title = "Annual egg prices", -->
-<!--     y = "$US (in cents adjusted for inflation) " -->
-<!--   ) -->
-<!-- ``` -->
-<!-- # 13.4 Forecast combinations  -->
-
-
-<!-- ```{r} -->
-
-
-<!-- auscafe <- aus_retail %>% -->
-<!--   filter(stringr::str_detect(Industry, "Takeaway")) %>% -->
-<!--   summarise(Turnover = sum(Turnover)) -->
-<!-- train <- auscafe %>% -->
-<!--   filter(year(Month) <= 2013) -->
-<!-- STLF <- decomposition_model( -->
-<!--   STL(log(Turnover) ~ season(window = Inf)), -->
-<!--   ETS(season_adjust ~ season("N")) -->
-<!-- ) -->
-<!-- cafe_models <- train %>% -->
-<!--   model( -->
-<!--     ets = ETS(Turnover), -->
-<!--     stlf = STLF, -->
-<!--     arima = ARIMA(log(Turnover)) -->
-<!--   ) %>% -->
-<!--   mutate(combination = (ets + stlf + arima) / 3) -->
-<!-- cafe_fc <- cafe_models %>% -->
-<!--   forecast(h = "5 years") -->
-<!-- cafe_fc %>% -->
-<!--   autoplot(auscafe %>% filter(year(Month) > 2008), -->
-<!--     level = NULL -->
-<!--   ) + -->
-<!--   labs( -->
-<!--     y = "$ billion", -->
-<!--     title = "Australian monthly expenditure on eating out" -->
-<!--   ) -->
-<!-- cafe_fc %>% -->
-<!--   accuracy(auscafe) %>% -->
-<!--   arrange(RMSE) -->
-<!-- cafe_fc %>% filter(Month == min(Month)) -->
-<!-- cafe_futures <- cafe_models %>% -->
-<!--   # Generate 1000 future sample paths -->
-<!--   generate(h = "5 years", times = 1000) %>% -->
-<!--   # Compute forecast distributions from future sample paths -->
-<!--   as_tibble() %>% -->
-<!--   group_by(Month, .model) %>% -->
-<!--   summarise( -->
-<!--     dist = distributional::dist_sample(list(.sim)) -->
-<!--   ) %>% -->
-<!--   ungroup() %>% -->
-<!--   # Create fable object -->
-<!--   as_fable( -->
-<!--     index = Month, key = .model, -->
-<!--     distribution = dist, response = "Turnover" -->
-<!--   ) -->
-<!-- # Forecast distributions for h=1 -->
-<!-- cafe_futures %>% filter(Month == min(Month)) -->
-<!-- cafe_futures %>% -->
-<!--   filter(.model == "combination") %>% -->
-<!--   autoplot(auscafe %>% filter(year(Month) > 2008)) + -->
-<!--   labs( -->
-<!--     y = "$ billion", -->
-<!--     title = "Australian monthly expenditure on eating out" -->
-<!--   ) -->
-<!-- cafe_futures %>% -->
-<!--   accuracy(auscafe, -->
-<!--     measures = interval_accuracy_measures, -->
-<!--     level = 95 -->
-<!--   ) %>% -->
-<!--   arrange(winkler) -->
-<!-- ``` -->
-<!-- # 13.5 Prediction intervals for aggregates  -->
-
-
-<!-- ```{r} -->
-
-
-<!-- fit <- auscafe %>% -->
-<!--   # Fit a model to the data -->
-<!--   model(ETS(Turnover)) -->
-<!-- futures <- fit %>% -->
-<!--   # Simulate 10000 future sample paths, each of length 12 -->
-<!--   generate(times = 10000, h = 12) %>% -->
-<!--   # Sum the results for each sample path -->
-<!--   as_tibble() %>% -->
-<!--   group_by(.rep) %>% -->
-<!--   summarise(.sim = sum(.sim)) %>% -->
-<!--   # Store as a distribution -->
-<!--   summarise(total = distributional::dist_sample(list(.sim))) -->
-<!-- futures %>% -->
-<!--   mutate( -->
-<!--     mean = mean(total), -->
-<!--     pi80 = hilo(total, 80), -->
-<!--     pi95 = hilo(total, 95) -->
-<!--   ) -->
-<!-- forecast(fit, h = 12) %>% -->
-<!--   as_tibble() %>% -->
-<!--   summarise(total = sum(.mean)) -->
-<!-- ``` -->
-<!-- # 13.6 Backcasting  -->
-
-
-<!-- ```{r} -->
-
-
-<!-- backcasts <- auscafe %>% -->
-<!--   mutate(reverse_time = rev(row_number())) %>% -->
-<!--   update_tsibble(index = reverse_time) %>% -->
-<!--   model(ets = ETS(Turnover ~ season(period = 12))) %>% -->
-<!--   forecast(h = 15) %>% -->
-<!--   mutate(Month = auscafe$Month[1] - (1:15)) %>% -->
-<!--   as_fable( -->
-<!--     index = Month, response = "Turnover", -->
-<!--     distribution = "Turnover" -->
-<!--   ) -->
-<!-- backcasts %>% -->
-<!--   autoplot(auscafe %>% filter(year(Month) < 1990)) + -->
-<!--   labs( -->
-<!--     title = "Backcasts of Australian food expenditure", -->
-<!--     y = "$ (billions)" -->
-<!--   ) -->
-<!-- ``` -->
-<!-- # 13.7 Very long and very short time series  -->
-
-
-<!-- ```{r} -->
-
-
-<!-- m3totsibble <- function(z) { -->
-<!--   bind_rows( -->
-<!--     as_tsibble(z$x) %>% mutate(Type = "Training"), -->
-<!--     as_tsibble(z$xx) %>% mutate(Type = "Test") -->
-<!--   ) %>% -->
-<!--     mutate( -->
-<!--       st = z$st, -->
-<!--       type = z$type, -->
-<!--       period = z$period, -->
-<!--       description = z$description, -->
-<!--       sn = z$sn, -->
-<!--     ) %>% -->
-<!--     as_tibble() -->
-<!-- } -->
-<!-- short <- Mcomp::M3 %>% -->
-<!--   subset("yearly") %>% -->
-<!--   purrr::map_dfr(m3totsibble) %>% -->
-<!--   group_by(sn) %>% -->
-<!--   mutate(n = max(row_number())) %>% -->
-<!--   filter(n <= 20) %>% -->
-<!--   ungroup() %>% -->
-<!--   as_tsibble(index = index, key = c(sn, period, st)) -->
-<!-- short_fit <- short %>% -->
-<!--   model(arima = ARIMA(value)) -->
-<!-- ``` -->
-<!-- # 13.8 Forecasting on training and test sets  -->
-
-
-<!-- ```{r} -->
-
-
-<!-- training <- auscafe %>% filter(year(Month) <= 2013) -->
-<!-- test <- auscafe %>% filter(year(Month) > 2013) -->
-<!-- cafe_fit <- training %>% -->
-<!--   model(ARIMA(log(Turnover))) -->
-<!-- cafe_fit %>% -->
-<!--   forecast(h = 60) %>% -->
-<!--   autoplot(auscafe) + -->
-<!--   labs( -->
-<!--     title = "Australian food expenditure", -->
-<!--     y = "$ (billions)" -->
-<!--   ) -->
-<!-- fits12 <- fitted(cafe_fit, h = 12) -->
-<!-- training %>% -->
-<!--   autoplot(Turnover) + -->
-<!--   autolayer(fits12, .fitted, col = "#D55E00") + -->
-<!--   labs( -->
-<!--     title = "Australian food expenditure", -->
-<!--     y = "$ (billions)" -->
-<!--   ) -->
-<!-- cafe_fit %>% -->
-<!--   refit(test) %>% -->
-<!--   accuracy() -->
-<!-- ``` -->
-<!-- # 13.9 Dealing with outliers and missing values  -->
-
-
-<!-- ```{r} -->
-
-
-<!-- tourism %>% -->
-<!--   filter( -->
-<!--     Region == "Adelaide Hills", Purpose == "Visiting" -->
-<!--   ) %>% -->
-<!--   autoplot(Trips) + -->
-<!--   labs( -->
-<!--     title = "Quarterly overnight trips to Adelaide Hills", -->
-<!--     y = "Number of trips" -->
-<!--   ) -->
-<!-- ah_decomp <- tourism %>% -->
-<!--   filter( -->
-<!--     Region == "Adelaide Hills", Purpose == "Visiting" -->
-<!--   ) %>% -->
-<!--   # Fit a non-seasonal STL decomposition -->
-<!--   model( -->
-<!--     stl = STL(Trips ~ season(period = 1), robust = TRUE) -->
-<!--   ) %>% -->
-<!--   components() -->
-<!-- ah_decomp %>% autoplot() -->
-<!-- outliers <- ah_decomp %>% -->
-<!--   filter( -->
-<!--     remainder < quantile(remainder, 0.25) - 3 * IQR(remainder) | -->
-<!--       remainder > quantile(remainder, 0.75) + 3 * IQR(remainder) -->
-<!--   ) -->
-<!-- outliers -->
-<!-- ah_miss <- tourism %>% -->
-<!--   filter( -->
-<!--     Region == "Adelaide Hills", -->
-<!--     Purpose == "Visiting" -->
-<!--   ) %>% -->
-<!--   # Remove outlying observations -->
-<!--   anti_join(outliers) %>% -->
-<!--   # Replace with missing values -->
-<!--   fill_gaps() -->
-<!-- ah_fill <- ah_miss %>% -->
-<!--   # Fit ARIMA model to the data containing missing values -->
-<!--   model(ARIMA(Trips)) %>% -->
-<!--   # Estimate Trips for all periods -->
-<!--   interpolate(ah_miss) -->
-<!-- ah_fill %>% -->
-<!--   # Only show outlying periods -->
-<!--   right_join(outliers %>% select(-Trips)) -->
-<!-- ah_fill %>% -->
-<!--   autoplot(Trips) + -->
-<!--   autolayer(ah_fill %>% filter_index("2002 Q3" ~ "2003 Q1"), -->
-<!--     Trips, -->
-<!--     colour = "#D55E00" -->
-<!--   ) + -->
-<!--   labs( -->
-<!--     title = "Quarterly overnight trips to Adelaide Hills", -->
-<!--     y = "Number of trips" -->
-<!--   ) -->
-<!-- ``` -->

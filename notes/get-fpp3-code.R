@@ -13,10 +13,10 @@ sections <- pg %>%
       mutate(href = glue::glue("https://otexts.com/fpp3/{href}"))
   })
 
-sections %>% slice(1:135)rowid_to_column() %>% tail(n = 25)
+sections %>% slice(1:135) %>% rowid_to_column() %>% tail(n = 20)
 
 fpp3_out <- sections %>%
-  slice(1:135) %>%
+  slice(1:117) %>%
   rowid_to_column() %>%
   split(.$rowid) %>%
   map(~{
@@ -30,7 +30,7 @@ fpp3_out <- sections %>%
       html_text()
     print(.x$section)
     if(length(code)>0){
-      c(paste("#",unique(.x$section),"\n\n"),"```{r}\n\n",code,"\n\n```")
+      c(paste("#",unique(.x$section),glue::glue("`r tags$a(href='{unique(.x$href)}')`"),"\n\n"),"```{r}\n\n",code,"\n\n```")
     }else{
       ""
     }
@@ -39,6 +39,7 @@ fpp3_out <- sections %>%
 
 
   })
+
 
 fpp3_out %>% unlist() %>% clipr::write_clip()
 

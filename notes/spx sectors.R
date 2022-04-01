@@ -51,7 +51,7 @@ sector_index_chart <- function(df,start_date = (Sys.Date() %m-% years(3))){
 }
 
 
-plot_index_splines <- function(df = sector_px){
+plot_index_splines <- function(df){
   seq.Date((Sys.Date() - years(6)),Sys.Date(),by = "year") %>%
     floor_date("year") %>%
     rev() %>%
@@ -60,11 +60,15 @@ plot_index_splines <- function(df = sector_px){
         sector_index_chart(.x)
 
     }) %>%
-    hw_grid()
+    hw_grid(ncol = 2)
 
 }
 
-plot_index_splines(sector_px)
+sector_ticks %>%
+  gather(etf_family,ticker,-(1:2)) %>%
+  select(etf_family,sector,ticker,weight) %>%
+  mutate(prices = map(ticker,tq_get)) %>%
+  plot_index_splines()
 
 
 plot_stocks <- function(df){
