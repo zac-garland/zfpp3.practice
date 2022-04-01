@@ -41,7 +41,7 @@ ggplot2::theme_set(theme_minimal())
 
 
 
-# Forecasting: Principles and Practice `r tags$a(href='https://otexts.com/fpp3/./')` 
+# Forecasting: Principles and Practice `r shiny::tags$a(href='https://otexts.com/fpp3/./')` 
 
 
 ```{r}
@@ -51,7 +51,7 @@ library(fpp3)
 
 
 ```
-# Preface `r tags$a(href='https://otexts.com/fpp3/index.html')` 
+# Preface `r shiny::tags$a(href='https://otexts.com/fpp3/index.html')` 
 
 
 ```{r}
@@ -72,147 +72,29 @@ library(fpp3)
 
 
 
-# 2.1 tsibble objects `r tags$a(href='https://otexts.com/fpp3/tsibbles.html')` 
+# 2.1 tsibble objects `r shiny::tags$a(href='https://otexts.com/fpp3/tsibbles.html')` 
 
 
 ```{r}
 
 
-y <- tsibble(
-  Year = 2015:2019,
-  Observation = c(123, 39, 78, 52, 110),
-  index = Year
-)
-z
-#> # A tibble: 5 × 2
-#>   Month    Observation
-#>   <chr>          <dbl>
-#> 1 2019 Jan          50
-#> 2 2019 Feb          23
-#> 3 2019 Mar          34
-#> 4 2019 Apr          30
-#> 5 2019 May          25
-z %>%
-  mutate(Month = yearmonth(Month)) %>%
-  as_tsibble(index = Month)
-#> # A tsibble: 5 x 2 [1M]
-#>      Month Observation
-#>      <mth>       <dbl>
-#> 1 2019 Jan          50
-#> 2 2019 Feb          23
-#> 3 2019 Mar          34
-#> 4 2019 Apr          30
-#> 5 2019 May          25
 olympic_running
-#> # A tsibble: 312 x 4 [4Y]
-#> # Key:       Length, Sex [14]
-#>     Year Length Sex    Time
-#>    <int>  <int> <chr> <dbl>
-#>  1  1896    100 men    12  
-#>  2  1900    100 men    11  
-#>  3  1904    100 men    11  
-#>  4  1908    100 men    10.8
-#>  5  1912    100 men    10.8
-#>  6  1916    100 men    NA  
-#>  7  1920    100 men    10.8
-#>  8  1924    100 men    10.6
-#>  9  1928    100 men    10.8
-#> 10  1932    100 men    10.3
-#> # … with 302 more rows
 olympic_running %>% distinct(Sex)
-#> # A tibble: 2 × 1
-#>   Sex  
-#>   <chr>
-#> 1 men  
-#> 2 women
 PBS
-#> # A tsibble: 67,596 x 9 [1M]
-#> # Key:       Concession, Type, ATC1, ATC2 [336]
-#>       Month Concession   Type    ATC1  ATC1_desc ATC2  ATC2_desc Scripts  Cost
-#>       <mth> <chr>        <chr>   <chr> <chr>     <chr> <chr>       <dbl> <dbl>
-#>  1 1991 Jul Concessional Co-pay… A     Alimenta… A01   STOMATOL…   18228 67877
-#>  2 1991 Aug Concessional Co-pay… A     Alimenta… A01   STOMATOL…   15327 57011
-#>  3 1991 Sep Concessional Co-pay… A     Alimenta… A01   STOMATOL…   14775 55020
-#>  4 1991 Oct Concessional Co-pay… A     Alimenta… A01   STOMATOL…   15380 57222
-#>  5 1991 Nov Concessional Co-pay… A     Alimenta… A01   STOMATOL…   14371 52120
-#>  6 1991 Dec Concessional Co-pay… A     Alimenta… A01   STOMATOL…   15028 54299
-#>  7 1992 Jan Concessional Co-pay… A     Alimenta… A01   STOMATOL…   11040 39753
-#>  8 1992 Feb Concessional Co-pay… A     Alimenta… A01   STOMATOL…   15165 54405
-#>  9 1992 Mar Concessional Co-pay… A     Alimenta… A01   STOMATOL…   16898 61108
-#> 10 1992 Apr Concessional Co-pay… A     Alimenta… A01   STOMATOL…   18141 65356
-#> # … with 67,586 more rows
 PBS %>%
   filter(ATC2 == "A10")
-#> # A tsibble: 816 x 9 [1M]
-#> # Key:       Concession, Type, ATC1, ATC2 [4]
-#>       Month Concession   Type   ATC1  ATC1_desc ATC2  ATC2_desc Scripts   Cost
-#>       <mth> <chr>        <chr>  <chr> <chr>     <chr> <chr>       <dbl>  <dbl>
-#>  1 1991 Jul Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   89733 2.09e6
-#>  2 1991 Aug Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   77101 1.80e6
-#>  3 1991 Sep Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   76255 1.78e6
-#>  4 1991 Oct Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   78681 1.85e6
-#>  5 1991 Nov Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   70554 1.69e6
-#>  6 1991 Dec Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   75814 1.84e6
-#>  7 1992 Jan Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   64186 1.56e6
-#>  8 1992 Feb Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   75899 1.73e6
-#>  9 1992 Mar Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   89445 2.05e6
-#> 10 1992 Apr Concessional Co-pa… A     Alimenta… A10   ANTIDIAB…   97315 2.23e6
-#> # … with 806 more rows
 PBS %>%
   filter(ATC2 == "A10") %>%
   select(Month, Concession, Type, Cost)
-#> # A tsibble: 816 x 4 [1M]
-#> # Key:       Concession, Type [4]
-#>       Month Concession   Type           Cost
-#>       <mth> <chr>        <chr>         <dbl>
-#>  1 1991 Jul Concessional Co-payments 2092878
-#>  2 1991 Aug Concessional Co-payments 1795733
-#>  3 1991 Sep Concessional Co-payments 1777231
-#>  4 1991 Oct Concessional Co-payments 1848507
-#>  5 1991 Nov Concessional Co-payments 1686458
-#>  6 1991 Dec Concessional Co-payments 1843079
-#>  7 1992 Jan Concessional Co-payments 1564702
-#>  8 1992 Feb Concessional Co-payments 1732508
-#>  9 1992 Mar Concessional Co-payments 2046102
-#> 10 1992 Apr Concessional Co-payments 2225977
-#> # … with 806 more rows
 PBS %>%
   filter(ATC2 == "A10") %>%
   select(Month, Concession, Type, Cost) %>%
   summarise(TotalC = sum(Cost))
-#> # A tsibble: 204 x 2 [1M]
-#>       Month  TotalC
-#>       <mth>   <dbl>
-#>  1 1991 Jul 3526591
-#>  2 1991 Aug 3180891
-#>  3 1991 Sep 3252221
-#>  4 1991 Oct 3611003
-#>  5 1991 Nov 3565869
-#>  6 1991 Dec 4306371
-#>  7 1992 Jan 5088335
-#>  8 1992 Feb 2814520
-#>  9 1992 Mar 2985811
-#> 10 1992 Apr 3204780
-#> # … with 194 more rows
 PBS %>%
   filter(ATC2 == "A10") %>%
   select(Month, Concession, Type, Cost) %>%
   summarise(TotalC = sum(Cost)) %>%
   mutate(Cost = TotalC/1e6)
-#> # A tsibble: 204 x 3 [1M]
-#>       Month  TotalC  Cost
-#>       <mth>   <dbl> <dbl>
-#>  1 1991 Jul 3526591  3.53
-#>  2 1991 Aug 3180891  3.18
-#>  3 1991 Sep 3252221  3.25
-#>  4 1991 Oct 3611003  3.61
-#>  5 1991 Nov 3565869  3.57
-#>  6 1991 Dec 4306371  4.31
-#>  7 1992 Jan 5088335  5.09
-#>  8 1992 Feb 2814520  2.81
-#>  9 1992 Mar 2985811  2.99
-#> 10 1992 Apr 3204780  3.20
-#> # … with 194 more rows
 PBS %>%
   filter(ATC2 == "A10") %>%
   select(Month, Concession, Type, Cost) %>%
@@ -226,25 +108,10 @@ prison <- prison %>%
              index = Quarter)
 
 prison
-#> # A tsibble: 3,072 x 6 [1Q]
-#> # Key:       State, Gender, Legal, Indigenous [64]
-#>    State Gender Legal    Indigenous Count Quarter
-#>    <chr> <chr>  <chr>    <chr>      <dbl>   <qtr>
-#>  1 ACT   Female Remanded ATSI           0 2005 Q1
-#>  2 ACT   Female Remanded ATSI           1 2005 Q2
-#>  3 ACT   Female Remanded ATSI           0 2005 Q3
-#>  4 ACT   Female Remanded ATSI           0 2005 Q4
-#>  5 ACT   Female Remanded ATSI           1 2006 Q1
-#>  6 ACT   Female Remanded ATSI           1 2006 Q2
-#>  7 ACT   Female Remanded ATSI           1 2006 Q3
-#>  8 ACT   Female Remanded ATSI           0 2006 Q4
-#>  9 ACT   Female Remanded ATSI           0 2007 Q1
-#> 10 ACT   Female Remanded ATSI           1 2007 Q2
-#> # … with 3,062 more rows
 
 
 ```
-# 2.2 Time plots `r tags$a(href='https://otexts.com/fpp3/time-plots.html')` 
+# 2.2 Time plots `r shiny::tags$a(href='https://otexts.com/fpp3/time-plots.html')` 
 
 
 ```{r}
@@ -264,7 +131,7 @@ autoplot(a10, Cost) +
 
 ```
 
-# 2.4 Seasonal plots `r tags$a(href='https://otexts.com/fpp3/seasonal-plots.html')` 
+# 2.4 Seasonal plots `r shiny::tags$a(href='https://otexts.com/fpp3/seasonal-plots.html')` 
 
 
 ```{r}
@@ -285,7 +152,7 @@ vic_elec %>% gg_season(Demand, period = "year") +
 
 
 ```
-# 2.5 Seasonal subseries plots `r tags$a(href='https://otexts.com/fpp3/subseries.html')` 
+# 2.5 Seasonal subseries plots `r shiny::tags$a(href='https://otexts.com/fpp3/subseries.html')` 
 
 
 ```{r}
@@ -302,21 +169,6 @@ holidays <- tourism %>%
   group_by(State) %>%
   summarise(Trips = sum(Trips))
 holidays
-#> # A tsibble: 640 x 3 [1Q]
-#> # Key:       State [8]
-#>    State Quarter Trips
-#>    <chr>   <qtr> <dbl>
-#>  1 ACT   1998 Q1  196.
-#>  2 ACT   1998 Q2  127.
-#>  3 ACT   1998 Q3  111.
-#>  4 ACT   1998 Q4  170.
-#>  5 ACT   1999 Q1  108.
-#>  6 ACT   1999 Q2  125.
-#>  7 ACT   1999 Q3  178.
-#>  8 ACT   1999 Q4  218.
-#>  9 ACT   2000 Q1  158.
-#> 10 ACT   2000 Q2  155.
-#> # … with 630 more rows
 autoplot(holidays, Trips) +
   labs(y = "Overnight trips ('000)",
        title = "Australian domestic holidays")
@@ -330,7 +182,7 @@ holidays %>%
 
 
 ```
-# 2.6 Scatterplots `r tags$a(href='https://otexts.com/fpp3/scatterplots.html')` 
+# 2.6 Scatterplots `r shiny::tags$a(href='https://otexts.com/fpp3/scatterplots.html')` 
 
 
 ```{r}
@@ -369,7 +221,7 @@ visitors %>%
 
 
 ```
-# 2.7 Lag plots `r tags$a(href='https://otexts.com/fpp3/lag-plots.html')` 
+# 2.7 Lag plots `r shiny::tags$a(href='https://otexts.com/fpp3/lag-plots.html')` 
 
 
 ```{r}
@@ -383,25 +235,13 @@ recent_production %>%
 
 
 ```
-# 2.8 Autocorrelation `r tags$a(href='https://otexts.com/fpp3/acf.html')` 
+# 2.8 Autocorrelation `r shiny::tags$a(href='https://otexts.com/fpp3/acf.html')` 
 
 
 ```{r}
 
 
 recent_production %>% ACF(Beer, lag_max = 9)
-#> # A tsibble: 9 x 2 [1Q]
-#>     lag      acf
-#>   <lag>    <dbl>
-#> 1    1Q -0.0530 
-#> 2    2Q -0.758  
-#> 3    3Q -0.0262 
-#> 4    4Q  0.802  
-#> 5    5Q -0.0775 
-#> 6    6Q -0.657  
-#> 7    7Q  0.00119
-#> 8    8Q  0.707  
-#> 9    9Q -0.0888
 recent_production %>%
   ACF(Beer) %>%
   autoplot() + labs(title="Australian beer production")
@@ -412,7 +252,7 @@ a10 %>%
 
 
 ```
-# 2.9 White noise `r tags$a(href='https://otexts.com/fpp3/wn.html')` 
+# 2.9 White noise `r shiny::tags$a(href='https://otexts.com/fpp3/wn.html')` 
 
 
 ```{r}
@@ -427,22 +267,12 @@ y %>%
 
 
 ```
-# 2.10 Exercises `r tags$a(href='https://otexts.com/fpp3/graphics-exercises.html')` 
+# 2.10 Exercises `r shiny::tags$a(href='https://otexts.com/fpp3/graphics-exercises.html')` 
 
 
 ```{r}
 
 
-tute1 <- readr::read_csv("tute1.csv")
-View(tute1)
-mytimeseries <- tute1 %>%
-  mutate(Quarter = yearmonth(Quarter)) %>%
-  as_tsibble(index = Quarter)
-mytimeseries %>%
-  pivot_longer(-Quarter) %>%
-  ggplot(aes(x = Quarter, y = value, colour = name)) +
-  geom_line() +
-  facet_grid(name ~ ., scales = "free_y")
 set.seed(12345678)
 myseries <- aus_retail %>%
   filter(`Series ID` == sample(aus_retail$`Series ID`,1))
@@ -456,7 +286,7 @@ dgoog <- gafa_stock %>%
 ```
 
 
-# 3.1 Transformations and adjustments `r tags$a(href='https://otexts.com/fpp3/transformations.html')` 
+# 3.1 Transformations and adjustments `r shiny::tags$a(href='https://otexts.com/fpp3/transformations.html')` 
 
 
 ```{r}
@@ -497,7 +327,7 @@ aus_production %>%
 
 
 ```
-# 3.2 Time series components `r tags$a(href='https://otexts.com/fpp3/components.html')` 
+# 3.2 Time series components `r shiny::tags$a(href='https://otexts.com/fpp3/components.html')` 
 
 
 ```{r}
@@ -512,22 +342,6 @@ autoplot(us_retail_employment, Employed) +
 dcmp <- us_retail_employment %>%
   model(stl = STL(Employed))
 components(dcmp)
-#> # A dable: 357 x 7 [1M]
-#> # Key:     .model [1]
-#> # :        Employed = trend + season_year + remainder
-#>    .model    Month Employed  trend season_year remainder season_adjust
-#>    <chr>     <mth>    <dbl>  <dbl>       <dbl>     <dbl>         <dbl>
-#>  1 stl    1990 Jan   13256. 13288.      -33.0      0.836        13289.
-#>  2 stl    1990 Feb   12966. 13269.     -258.     -44.6          13224.
-#>  3 stl    1990 Mar   12938. 13250.     -290.     -22.1          13228.
-#>  4 stl    1990 Apr   13012. 13231.     -220.       1.05         13232.
-#>  5 stl    1990 May   13108. 13211.     -114.      11.3          13223.
-#>  6 stl    1990 Jun   13183. 13192.      -24.3     15.5          13207.
-#>  7 stl    1990 Jul   13170. 13172.      -23.2     21.6          13193.
-#>  8 stl    1990 Aug   13160. 13151.       -9.52    17.8          13169.
-#>  9 stl    1990 Sep   13113. 13131.      -39.5     22.0          13153.
-#> 10 stl    1990 Oct   13185. 13110.       61.6     13.2          13124.
-#> # … with 347 more rows
 components(dcmp) %>%
   as_tsibble() %>%
   autoplot(Employed, colour="gray") +
@@ -546,7 +360,7 @@ components(dcmp) %>%
 
 
 ```
-# 3.3 Moving averages `r tags$a(href='https://otexts.com/fpp3/moving-averages.html')` 
+# 3.3 Moving averages `r shiny::tags$a(href='https://otexts.com/fpp3/moving-averages.html')` 
 
 
 ```{r}
@@ -593,7 +407,7 @@ us_retail_employment_ma %>%
 
 
 ```
-# 3.4 Classical decomposition `r tags$a(href='https://otexts.com/fpp3/classical-decomposition.html')` 
+# 3.4 Classical decomposition `r shiny::tags$a(href='https://otexts.com/fpp3/classical-decomposition.html')` 
 
 
 ```{r}
@@ -610,7 +424,7 @@ us_retail_employment %>%
 
 
 ```
-# 3.5 Methods used by official statistics agencies `r tags$a(href='https://otexts.com/fpp3/methods-used-by-official-statistics-agencies.html')` 
+# 3.5 Methods used by official statistics agencies `r shiny::tags$a(href='https://otexts.com/fpp3/methods-used-by-official-statistics-agencies.html')` 
 
 
 ```{r}
@@ -645,7 +459,7 @@ autoplot(seats_dcmp) +
 
 
 ```
-# 3.6 STL decomposition `r tags$a(href='https://otexts.com/fpp3/stl.html')` 
+# 3.6 STL decomposition `r shiny::tags$a(href='https://otexts.com/fpp3/stl.html')` 
 
 
 ```{r}
@@ -661,7 +475,7 @@ us_retail_employment %>%
 
 
 ```
-# 3.7 Exercises `r tags$a(href='https://otexts.com/fpp3/decomposition-exercises.html')` 
+# 3.7 Exercises `r shiny::tags$a(href='https://otexts.com/fpp3/decomposition-exercises.html')` 
 
 
 ```{r}
@@ -673,7 +487,7 @@ gas <- tail(aus_production, 5*4) %>% select(Gas)
 ```
 
 
-# 4.1 Some simple statistics `r tags$a(href='https://otexts.com/fpp3/some-simple-statistics.html')` 
+# 4.1 Some simple statistics `r shiny::tags$a(href='https://otexts.com/fpp3/some-simple-statistics.html')` 
 
 
 ```{r}
@@ -682,64 +496,21 @@ gas <- tail(aus_production, 5*4) %>% select(Gas)
 tourism %>%
   features(Trips, list(mean = mean)) %>%
   arrange(mean)
-#> # A tibble: 304 × 4
-#>    Region          State              Purpose   mean
-#>    <chr>           <chr>              <chr>    <dbl>
-#>  1 Kangaroo Island South Australia    Other    0.340
-#>  2 MacDonnell      Northern Territory Other    0.449
-#>  3 Wilderness West Tasmania           Other    0.478
-#>  4 Barkly          Northern Territory Other    0.632
-#>  5 Clare Valley    South Australia    Other    0.898
-#>  6 Barossa         South Australia    Other    1.02 
-#>  7 Kakadu Arnhem   Northern Territory Other    1.04 
-#>  8 Lasseter        Northern Territory Other    1.14 
-#>  9 Wimmera         Victoria           Other    1.15 
-#> 10 MacDonnell      Northern Territory Visiting 1.18 
-#> # … with 294 more rows
 tourism %>% features(Trips, quantile)
-#> # A tibble: 304 × 8
-#>    Region         State           Purpose    `0%`  `25%`   `50%`  `75%` `100%`
-#>    <chr>          <chr>           <chr>     <dbl>  <dbl>   <dbl>  <dbl>  <dbl>
-#>  1 Adelaide       South Australia Busine…  68.7   134.   153.    177.   242.  
-#>  2 Adelaide       South Australia Holiday 108.    135.   154.    172.   224.  
-#>  3 Adelaide       South Australia Other    25.9    43.9   53.8    62.5  107.  
-#>  4 Adelaide       South Australia Visiti… 137.    179.   206.    229.   270.  
-#>  5 Adelaide Hills South Australia Busine…   0       0      1.26    3.92  28.6 
-#>  6 Adelaide Hills South Australia Holiday   0       5.77   8.52   14.1   35.8 
-#>  7 Adelaide Hills South Australia Other     0       0      0.908   2.09   8.95
-#>  8 Adelaide Hills South Australia Visiti…   0.778   8.91  12.2    16.8   81.1 
-#>  9 Alice Springs  Northern Terri… Busine…   1.01    9.13  13.3    18.5   34.1 
-#> 10 Alice Springs  Northern Terri… Holiday   2.81   16.9   31.5    44.8   76.5 
-#> # … with 294 more rows
 
 
 ```
-# 4.2 ACF features `r tags$a(href='https://otexts.com/fpp3/acf-features.html')` 
+# 4.2 ACF features `r shiny::tags$a(href='https://otexts.com/fpp3/acf-features.html')` 
 
 
 ```{r}
 
 
 tourism %>% features(Trips, feat_acf)
-#> # A tibble: 304 × 10
-#>    Region       State Purpose     acf1 acf10 diff1_acf1 diff1_acf10 diff2_acf1
-#>    <chr>        <chr> <chr>      <dbl> <dbl>      <dbl>       <dbl>      <dbl>
-#>  1 Adelaide     Sout… Busine…  0.0333  0.131     -0.520       0.463     -0.676
-#>  2 Adelaide     Sout… Holiday  0.0456  0.372     -0.343       0.614     -0.487
-#>  3 Adelaide     Sout… Other    0.517   1.15      -0.409       0.383     -0.675
-#>  4 Adelaide     Sout… Visiti…  0.0684  0.294     -0.394       0.452     -0.518
-#>  5 Adelaide Hi… Sout… Busine…  0.0709  0.134     -0.580       0.415     -0.750
-#>  6 Adelaide Hi… Sout… Holiday  0.131   0.313     -0.536       0.500     -0.716
-#>  7 Adelaide Hi… Sout… Other    0.261   0.330     -0.253       0.317     -0.457
-#>  8 Adelaide Hi… Sout… Visiti…  0.139   0.117     -0.472       0.239     -0.626
-#>  9 Alice Sprin… Nort… Busine…  0.217   0.367     -0.500       0.381     -0.658
-#> 10 Alice Sprin… Nort… Holiday -0.00660 2.11      -0.153       2.11      -0.274
-#> # … with 294 more rows, and 2 more variables: diff2_acf10 <dbl>,
-#> #   season_acf1 <dbl>
 
 
 ```
-# 4.3 STL Features `r tags$a(href='https://otexts.com/fpp3/stlfeatures.html')` 
+# 4.3 STL Features `r shiny::tags$a(href='https://otexts.com/fpp3/stlfeatures.html')` 
 
 
 ```{r}
@@ -747,22 +518,6 @@ tourism %>% features(Trips, feat_acf)
 
 tourism %>%
   features(Trips, feat_stl)
-#> # A tibble: 304 × 12
-#>    Region       State Purpose trend_strength seasonal_streng… seasonal_peak_y…
-#>    <chr>        <chr> <chr>            <dbl>            <dbl>            <dbl>
-#>  1 Adelaide     Sout… Busine…          0.464            0.407                3
-#>  2 Adelaide     Sout… Holiday          0.554            0.619                1
-#>  3 Adelaide     Sout… Other            0.746            0.202                2
-#>  4 Adelaide     Sout… Visiti…          0.435            0.452                1
-#>  5 Adelaide Hi… Sout… Busine…          0.464            0.179                3
-#>  6 Adelaide Hi… Sout… Holiday          0.528            0.296                2
-#>  7 Adelaide Hi… Sout… Other            0.593            0.404                2
-#>  8 Adelaide Hi… Sout… Visiti…          0.488            0.254                0
-#>  9 Alice Sprin… Nort… Busine…          0.534            0.251                0
-#> 10 Alice Sprin… Nort… Holiday          0.381            0.832                3
-#> # … with 294 more rows, and 6 more variables: seasonal_trough_year <dbl>,
-#> #   spikiness <dbl>, linearity <dbl>, curvature <dbl>, stl_e_acf1 <dbl>,
-#> #   stl_e_acf10 <dbl>
 tourism %>%
   features(Trips, feat_stl) %>%
   ggplot(aes(x = trend_strength, y = seasonal_strength_year,
@@ -782,7 +537,7 @@ tourism %>%
 
 ```
 
-# 4.5 Exploring Australian tourism data `r tags$a(href='https://otexts.com/fpp3/exploring-australian-tourism-data.html')` 
+# 4.5 Exploring Australian tourism data `r shiny::tags$a(href='https://otexts.com/fpp3/exploring-australian-tourism-data.html')` 
 
 
 ```{r}
@@ -791,26 +546,6 @@ tourism %>%
 tourism_features <- tourism %>%
   features(Trips, feature_set(pkgs = "feasts"))
 tourism_features
-#> # A tibble: 304 × 51
-#>    Region       State Purpose trend_strength seasonal_streng… seasonal_peak_y…
-#>    <chr>        <chr> <chr>            <dbl>            <dbl>            <dbl>
-#>  1 Adelaide     Sout… Busine…          0.464            0.407                3
-#>  2 Adelaide     Sout… Holiday          0.554            0.619                1
-#>  3 Adelaide     Sout… Other            0.746            0.202                2
-#>  4 Adelaide     Sout… Visiti…          0.435            0.452                1
-#>  5 Adelaide Hi… Sout… Busine…          0.464            0.179                3
-#>  6 Adelaide Hi… Sout… Holiday          0.528            0.296                2
-#>  7 Adelaide Hi… Sout… Other            0.593            0.404                2
-#>  8 Adelaide Hi… Sout… Visiti…          0.488            0.254                0
-#>  9 Alice Sprin… Nort… Busine…          0.534            0.251                0
-#> 10 Alice Sprin… Nort… Holiday          0.381            0.832                3
-#> # … with 294 more rows, and 45 more variables: seasonal_trough_year <dbl>,
-#> #   spikiness <dbl>, linearity <dbl>, curvature <dbl>, stl_e_acf1 <dbl>,
-#> #   stl_e_acf10 <dbl>, acf1 <dbl>, acf10 <dbl>, diff1_acf1 <dbl>,
-#> #   diff1_acf10 <dbl>, diff2_acf1 <dbl>, diff2_acf10 <dbl>,
-#> #   season_acf1 <dbl>, pacf5 <dbl>, diff1_pacf5 <dbl>, diff2_pacf5 <dbl>,
-#> #   season_pacf <dbl>, zero_run_mean <dbl>, nonzero_squared_cv <dbl>,
-#> #   zero_start_prop <dbl>, zero_end_prop <dbl>, lambda_guerrero <dbl>, …
 library(glue)
 tourism_features %>%
   select_at(vars(contains("season"), Purpose)) %>%
@@ -836,13 +571,6 @@ outliers <- pcs %>%
   filter(.fittedPC1 > 10) %>%
   select(Region, State, Purpose, .fittedPC1, .fittedPC2)
 outliers
-#> # A tibble: 4 × 5
-#>   Region                 State             Purpose  .fittedPC1 .fittedPC2
-#>   <chr>                  <chr>             <chr>         <dbl>      <dbl>
-#> 1 Australia's North West Western Australia Business       13.4    -11.3  
-#> 2 Australia's South West Western Australia Holiday        10.9      0.880
-#> 3 Melbourne              Victoria          Holiday        12.3    -10.4  
-#> 4 South Coast            New South Wales   Holiday        11.9      9.42
 outliers %>%
   left_join(tourism, by = c("State", "Region", "Purpose")) %>%
   mutate(
@@ -859,7 +587,7 @@ outliers %>%
 
 
 
-# 5.1 A tidy forecasting workflow `r tags$a(href='https://otexts.com/fpp3/a-tidy-forecasting-workflow.html')` 
+# 5.1 A tidy forecasting workflow `r shiny::tags$a(href='https://otexts.com/fpp3/a-tidy-forecasting-workflow.html')` 
 
 
 ```{r}
@@ -871,41 +599,11 @@ gdppc %>%
   filter(Country == "Sweden") %>%
   autoplot(GDP_per_capita) +
   labs(y = "$US", title = "GDP per capita for Sweden")
-TSLM(GDP_per_capita ~ trend()).
+# TSLM(GDP_per_capita ~ trend())
 fit <- gdppc %>%
   model(trend_model = TSLM(GDP_per_capita ~ trend()))
 fit
-#> # A mable: 263 x 2
-#> # Key:     Country [263]
-#>    Country             trend_model
-#>    <fct>                   <model>
-#>  1 Afghanistan              <TSLM>
-#>  2 Albania                  <TSLM>
-#>  3 Algeria                  <TSLM>
-#>  4 American Samoa           <TSLM>
-#>  5 Andorra                  <TSLM>
-#>  6 Angola                   <TSLM>
-#>  7 Antigua and Barbuda      <TSLM>
-#>  8 Arab World               <TSLM>
-#>  9 Argentina                <TSLM>
-#> 10 Armenia                  <TSLM>
-#> # … with 253 more rows
 fit %>% forecast(h = "3 years")
-#> # A fable: 789 x 5 [1Y]
-#> # Key:     Country, .model [263]
-#>    Country        .model       Year   GDP_per_capita  .mean
-#>    <fct>          <chr>       <dbl>           <dist>  <dbl>
-#>  1 Afghanistan    trend_model  2018     N(526, 9653)   526.
-#>  2 Afghanistan    trend_model  2019     N(534, 9689)   534.
-#>  3 Afghanistan    trend_model  2020     N(542, 9727)   542.
-#>  4 Albania        trend_model  2018  N(4716, 476419)  4716.
-#>  5 Albania        trend_model  2019  N(4867, 481086)  4867.
-#>  6 Albania        trend_model  2020  N(5018, 486012)  5018.
-#>  7 Algeria        trend_model  2018  N(4410, 643094)  4410.
-#>  8 Algeria        trend_model  2019  N(4489, 645311)  4489.
-#>  9 Algeria        trend_model  2020  N(4568, 647602)  4568.
-#> 10 American Samoa trend_model  2018 N(12491, 652926) 12491.
-#> # … with 779 more rows
 fit %>%
   forecast(h = "3 years") %>%
   filter(Country == "Sweden") %>%
@@ -914,7 +612,7 @@ fit %>%
 
 
 ```
-# 5.2 Some simple forecasting methods `r tags$a(href='https://otexts.com/fpp3/simple-methods.html')` 
+# 5.2 Some simple forecasting methods `r shiny::tags$a(href='https://otexts.com/fpp3/simple-methods.html')` 
 
 
 ```{r}
@@ -981,32 +679,17 @@ google_fc %>%
 
 
 ```
-# 5.3 Fitted values and residuals `r tags$a(href='https://otexts.com/fpp3/residuals.html')` 
+# 5.3 Fitted values and residuals `r shiny::tags$a(href='https://otexts.com/fpp3/residuals.html')` 
 
 
 ```{r}
 
 
 augment(beer_fit)
-#> # A tsibble: 180 x 6 [1Q]
-#> # Key:       .model [3]
-#>    .model Quarter  Beer .fitted .resid .innov
-#>    <chr>    <qtr> <dbl>   <dbl>  <dbl>  <dbl>
-#>  1 Mean   1992 Q1   443    436.   6.55   6.55
-#>  2 Mean   1992 Q2   410    436. -26.4  -26.4 
-#>  3 Mean   1992 Q3   420    436. -16.4  -16.4 
-#>  4 Mean   1992 Q4   532    436.  95.6   95.6 
-#>  5 Mean   1993 Q1   433    436.  -3.45  -3.45
-#>  6 Mean   1993 Q2   421    436. -15.4  -15.4 
-#>  7 Mean   1993 Q3   410    436. -26.4  -26.4 
-#>  8 Mean   1993 Q4   512    436.  75.6   75.6 
-#>  9 Mean   1994 Q1   449    436.  12.6   12.6 
-#> 10 Mean   1994 Q2   381    436. -55.4  -55.4 
-#> # … with 170 more rows
 
 
 ```
-# 5.4 Residual diagnostics `r tags$a(href='https://otexts.com/fpp3/diagnostics.html')` 
+# 5.4 Residual diagnostics `r shiny::tags$a(href='https://otexts.com/fpp3/diagnostics.html')` 
 
 
 ```{r}
@@ -1033,31 +716,15 @@ google_2015 %>%
   model(NAIVE(Close)) %>%
   gg_tsresiduals()
 aug %>% features(.innov, box_pierce, lag = 10, dof = 0)
-#> # A tibble: 1 × 4
-#>   Symbol .model       bp_stat bp_pvalue
-#>   <chr>  <chr>          <dbl>     <dbl>
-#> 1 GOOG   NAIVE(Close)    7.74     0.654
 
 aug %>% features(.innov, ljung_box, lag = 10, dof = 0)
-#> # A tibble: 1 × 4
-#>   Symbol .model       lb_stat lb_pvalue
-#>   <chr>  <chr>          <dbl>     <dbl>
-#> 1 GOOG   NAIVE(Close)    7.91     0.637
 fit <- google_2015 %>% model(RW(Close ~ drift()))
 tidy(fit)
-#> # A tibble: 1 × 7
-#>   Symbol .model              term  estimate std.error statistic p.value
-#>   <chr>  <chr>               <chr>    <dbl>     <dbl>     <dbl>   <dbl>
-#> 1 GOOG   RW(Close ~ drift()) b        0.944     0.705      1.34   0.182
 augment(fit) %>% features(.innov, ljung_box, lag=10, dof=1)
-#> # A tibble: 1 × 4
-#>   Symbol .model              lb_stat lb_pvalue
-#>   <chr>  <chr>                 <dbl>     <dbl>
-#> 1 GOOG   RW(Close ~ drift())    7.91     0.543
 
 
 ```
-# 5.5 Distributional forecasts and prediction intervals `r tags$a(href='https://otexts.com/fpp3/prediction-intervals.html')` 
+# 5.5 Distributional forecasts and prediction intervals `r shiny::tags$a(href='https://otexts.com/fpp3/prediction-intervals.html')` 
 
 
 ```{r}
@@ -1067,20 +734,6 @@ google_2015 %>%
   model(NAIVE(Close)) %>%
   forecast(h = 10) %>%
   hilo()
-#> # A tsibble: 10 x 7 [1]
-#> # Key:       Symbol, .model [1]
-#>    Symbol .model      day        Close .mean            `80%`            `95%`
-#>    <chr>  <chr>     <dbl>       <dist> <dbl>           <hilo>           <hilo>
-#>  1 GOOG   NAIVE(Cl…   253  N(759, 125)  759. [744.5, 773.2]80 [736.9, 780.8]95
-#>  2 GOOG   NAIVE(Cl…   254  N(759, 250)  759. [738.6, 779.2]80 [727.9, 789.9]95
-#>  3 GOOG   NAIVE(Cl…   255  N(759, 376)  759. [734.0, 783.7]80 [720.9, 796.9]95
-#>  4 GOOG   NAIVE(Cl…   256  N(759, 501)  759. [730.2, 787.6]80 [715.0, 802.7]95
-#>  5 GOOG   NAIVE(Cl…   257  N(759, 626)  759. [726.8, 790.9]80 [709.8, 807.9]95
-#>  6 GOOG   NAIVE(Cl…   258  N(759, 751)  759. [723.8, 794.0]80 [705.2, 812.6]95
-#>  7 GOOG   NAIVE(Cl…   259  N(759, 876)  759. [720.9, 796.8]80 [700.9, 816.9]95
-#>  8 GOOG   NAIVE(Cl…   260 N(759, 1002)  759. [718.3, 799.4]80 [696.8, 820.9]95
-#>  9 GOOG   NAIVE(Cl…   261 N(759, 1127)  759. [715.9, 801.9]80 [693.1, 824.7]95
-#> 10 GOOG   NAIVE(Cl…   262 N(759, 1252)  759. [713.5, 804.2]80 [689.5, 828.2]95
 google_2015 %>%
   model(NAIVE(Close)) %>%
   forecast(h = 10) %>%
@@ -1090,21 +743,6 @@ fit <- google_2015 %>%
   model(NAIVE(Close))
 sim <- fit %>% generate(h = 30, times = 5, bootstrap = TRUE)
 sim
-#> # A tsibble: 150 x 5 [1]
-#> # Key:       Symbol, .model, .rep [5]
-#>    Symbol .model         day .rep   .sim
-#>    <chr>  <chr>        <dbl> <chr> <dbl>
-#>  1 GOOG   NAIVE(Close)   253 1      756.
-#>  2 GOOG   NAIVE(Close)   254 1      749.
-#>  3 GOOG   NAIVE(Close)   255 1      751.
-#>  4 GOOG   NAIVE(Close)   256 1      750.
-#>  5 GOOG   NAIVE(Close)   257 1      754.
-#>  6 GOOG   NAIVE(Close)   258 1      754.
-#>  7 GOOG   NAIVE(Close)   259 1      758.
-#>  8 GOOG   NAIVE(Close)   260 1      763.
-#>  9 GOOG   NAIVE(Close)   261 1      759.
-#> 10 GOOG   NAIVE(Close)   262 1      748.
-#> # … with 140 more rows
 google_2015 %>%
   ggplot(aes(x = day)) +
   geom_line(aes(y = Close)) +
@@ -1114,45 +752,16 @@ google_2015 %>%
   guides(colour = "none")
 fc <- fit %>% forecast(h = 30, bootstrap = TRUE)
 fc
-#> # A fable: 30 x 5 [1]
-#> # Key:     Symbol, .model [1]
-#>    Symbol .model         day        Close .mean
-#>    <chr>  <chr>        <dbl>       <dist> <dbl>
-#>  1 GOOG   NAIVE(Close)   253 sample[5000]  759.
-#>  2 GOOG   NAIVE(Close)   254 sample[5000]  759.
-#>  3 GOOG   NAIVE(Close)   255 sample[5000]  758.
-#>  4 GOOG   NAIVE(Close)   256 sample[5000]  759.
-#>  5 GOOG   NAIVE(Close)   257 sample[5000]  759.
-#>  6 GOOG   NAIVE(Close)   258 sample[5000]  759.
-#>  7 GOOG   NAIVE(Close)   259 sample[5000]  759.
-#>  8 GOOG   NAIVE(Close)   260 sample[5000]  759.
-#>  9 GOOG   NAIVE(Close)   261 sample[5000]  759.
-#> 10 GOOG   NAIVE(Close)   262 sample[5000]  759.
-#> # … with 20 more rows
 autoplot(fc, google_2015) +
   labs(title="Google daily closing stock price", y="$US" )
 google_2015 %>%
   model(NAIVE(Close)) %>%
   forecast(h = 10, bootstrap = TRUE, times = 1000) %>%
   hilo()
-#> # A tsibble: 10 x 7 [1]
-#> # Key:       Symbol, .model [1]
-#>    Symbol .model      day        Close .mean            `80%`            `95%`
-#>    <chr>  <chr>     <dbl>       <dist> <dbl>           <hilo>           <hilo>
-#>  1 GOOG   NAIVE(Cl…   253 sample[1000]  760. [748.2, 770.8]80 [743.9, 777.6]95
-#>  2 GOOG   NAIVE(Cl…   254 sample[1000]  760. [743.9, 776.1]80 [734.1, 801.6]95
-#>  3 GOOG   NAIVE(Cl…   255 sample[1000]  760. [739.5, 781.7]80 [728.6, 809.0]95
-#>  4 GOOG   NAIVE(Cl…   256 sample[1000]  760. [736.7, 784.7]80 [723.4, 813.1]95
-#>  5 GOOG   NAIVE(Cl…   257 sample[1000]  760. [734.4, 787.2]80 [719.4, 819.7]95
-#>  6 GOOG   NAIVE(Cl…   258 sample[1000]  760. [731.5, 790.2]80 [717.8, 820.3]95
-#>  7 GOOG   NAIVE(Cl…   259 sample[1000]  761. [730.4, 793.0]80 [713.0, 826.3]95
-#>  8 GOOG   NAIVE(Cl…   260 sample[1000]  761. [726.2, 796.2]80 [706.3, 830.7]95
-#>  9 GOOG   NAIVE(Cl…   261 sample[1000]  761. [723.5, 800.2]80 [707.5, 841.0]95
-#> 10 GOOG   NAIVE(Cl…   262 sample[1000]  760. [719.2, 801.8]80 [701.9, 841.4]95
 
 
 ```
-# 5.6 Forecasting using transformations `r tags$a(href='https://otexts.com/fpp3/ftransformations.html')` 
+# 5.6 Forecasting using transformations `r shiny::tags$a(href='https://otexts.com/fpp3/ftransformations.html')` 
 
 
 ```{r}
@@ -1170,7 +779,7 @@ prices %>%
 
 
 ```
-# 5.7 Forecasting with decomposition `r tags$a(href='https://otexts.com/fpp3/forecasting-decomposition.html')` 
+# 5.7 Forecasting with decomposition `r shiny::tags$a(href='https://otexts.com/fpp3/forecasting-decomposition.html')` 
 
 
 ```{r}
@@ -1202,7 +811,7 @@ fit_dcmp %>% gg_tsresiduals()
 
 
 ```
-# 5.8 Evaluating point forecast accuracy `r tags$a(href='https://otexts.com/fpp3/accuracy.html')` 
+# 5.8 Evaluating point forecast accuracy `r shiny::tags$a(href='https://otexts.com/fpp3/accuracy.html')` 
 
 
 ```{r}
@@ -1261,7 +870,7 @@ accuracy(google_fc, google_stock)
 
 
 ```
-# 5.9 Evaluating distributional forecast accuracy `r tags$a(href='https://otexts.com/fpp3/distaccuracy.html')` 
+# 5.9 Evaluating distributional forecast accuracy `r shiny::tags$a(href='https://otexts.com/fpp3/distaccuracy.html')` 
 
 
 ```{r}
@@ -1275,38 +884,18 @@ google_fc %>%
 google_fc %>%
   filter(.model == "Naïve", Date == "2016-01-04") %>%
   accuracy(google_stock, list(qs=quantile_score), probs=0.10)
-#> # A tibble: 1 × 4
-#>   .model Symbol .type    qs
-#>   <chr>  <chr>  <chr> <dbl>
-#> 1 Naïve  GOOG   Test   4.86
 google_fc %>%
   filter(.model == "Naïve", Date == "2016-01-04") %>%
   accuracy(google_stock,
     list(winkler = winkler_score), level = 80)
-#> # A tibble: 1 × 4
-#>   .model Symbol .type winkler
-#>   <chr>  <chr>  <chr>   <dbl>
-#> 1 Naïve  GOOG   Test     55.7
 google_fc %>%
   accuracy(google_stock, list(crps = CRPS))
-#> # A tibble: 3 × 4
-#>   .model Symbol .type  crps
-#>   <chr>  <chr>  <chr> <dbl>
-#> 1 Drift  GOOG   Test   33.5
-#> 2 Mean   GOOG   Test   76.7
-#> 3 Naïve  GOOG   Test   26.5
 google_fc %>%
   accuracy(google_stock, list(skill = skill_score(CRPS)))
-#> # A tibble: 3 × 4
-#>   .model Symbol .type  skill
-#>   <chr>  <chr>  <chr>  <dbl>
-#> 1 Drift  GOOG   Test  -0.266
-#> 2 Mean   GOOG   Test  -1.90 
-#> 3 Naïve  GOOG   Test   0
 
 
 ```
-# 5.10 Time series cross-validation `r tags$a(href='https://otexts.com/fpp3/tscv.html')` 
+# 5.10 Time series cross-validation `r shiny::tags$a(href='https://otexts.com/fpp3/tscv.html')` 
 
 
 ```{r}
@@ -1317,21 +906,6 @@ google_2015_tr <- google_2015 %>%
   stretch_tsibble(.init = 3, .step = 1) %>%
   relocate(Date, Symbol, .id)
 google_2015_tr
-#> # A tsibble: 31,875 x 10 [1]
-#> # Key:       Symbol, .id [250]
-#>    Date       Symbol   .id  Open  High   Low Close Adj_Close  Volume   day
-#>    <date>     <chr>  <int> <dbl> <dbl> <dbl> <dbl>     <dbl>   <dbl> <int>
-#>  1 2015-01-02 GOOG       1  526.  528.  521.  522.      522. 1447600     1
-#>  2 2015-01-05 GOOG       1  520.  521.  510.  511.      511. 2059800     2
-#>  3 2015-01-06 GOOG       1  512.  513.  498.  499.      499. 2899900     3
-#>  4 2015-01-02 GOOG       2  526.  528.  521.  522.      522. 1447600     1
-#>  5 2015-01-05 GOOG       2  520.  521.  510.  511.      511. 2059800     2
-#>  6 2015-01-06 GOOG       2  512.  513.  498.  499.      499. 2899900     3
-#>  7 2015-01-07 GOOG       2  504.  504.  497.  498.      498. 2065100     4
-#>  8 2015-01-02 GOOG       3  526.  528.  521.  522.      522. 1447600     1
-#>  9 2015-01-05 GOOG       3  520.  521.  510.  511.      511. 2059800     2
-#> 10 2015-01-06 GOOG       3  512.  513.  498.  499.      499. 2899900     3
-#> # … with 31,865 more rows
 # TSCV accuracy
 google_2015_tr %>%
   model(RW(Close ~ drift())) %>%
@@ -1357,7 +931,7 @@ fc %>%
 
 
 ```
-# 5.11 Exercises `r tags$a(href='https://otexts.com/fpp3/toolbox-exercises.html')` 
+# 5.11 Exercises `r shiny::tags$a(href='https://otexts.com/fpp3/toolbox-exercises.html')` 
 
 
 ```{r}
@@ -1377,7 +951,7 @@ myseries_train <- myseries %>%
 autoplot(myseries, Turnover) +
   autolayer(myseries_train, Turnover, colour = "red")
 fit <- myseries_train %>%
-  model(SNAIVE())
+  model(SNAIVE(Turnover))
 fit %>% gg_tsresiduals()
 fc <- fit %>%
   forecast(new_data = anti_join(myseries, myseries_train))
@@ -1398,7 +972,7 @@ fc %>% accuracy(myseries)
 
 
 
-# 7.1 The linear model `r tags$a(href='https://otexts.com/fpp3/regression-intro.html')` 
+# 7.1 The linear model `r shiny::tags$a(href='https://otexts.com/fpp3/regression-intro.html')` 
 
 
 ```{r}
@@ -1417,23 +991,6 @@ us_change %>%
 us_change %>%
   model(TSLM(Consumption ~ Income)) %>%
   report()
-#> Series: Consumption 
-#> Model: TSLM 
-#> 
-#> Residuals:
-#>     Min      1Q  Median      3Q     Max 
-#> -2.5824 -0.2778  0.0186  0.3233  1.4223 
-#> 
-#> Coefficients:
-#>             Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)   0.5445     0.0540   10.08  < 2e-16 ***
-#> Income        0.2718     0.0467    5.82  2.4e-08 ***
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Residual standard error: 0.591 on 196 degrees of freedom
-#> Multiple R-squared: 0.147,   Adjusted R-squared: 0.143
-#> F-statistic: 33.8 on 1 and 196 DF, p-value: 2.4e-08
 us_change %>%
   select(-Consumption, -Income) %>%
   pivot_longer(-Quarter) %>%
@@ -1447,7 +1004,7 @@ us_change %>%
 
 
 ```
-# 7.2 Least squares estimation `r tags$a(href='https://otexts.com/fpp3/least-squares.html')` 
+# 7.2 Least squares estimation `r shiny::tags$a(href='https://otexts.com/fpp3/least-squares.html')` 
 
 
 ```{r}
@@ -1457,26 +1014,6 @@ fit_consMR <- us_change %>%
   model(tslm = TSLM(Consumption ~ Income + Production +
                                     Unemployment + Savings))
 report(fit_consMR)
-#> Series: Consumption 
-#> Model: TSLM 
-#> 
-#> Residuals:
-#>     Min      1Q  Median      3Q     Max 
-#> -0.9055 -0.1582 -0.0361  0.1362  1.1547 
-#> 
-#> Coefficients:
-#>              Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)   0.25311    0.03447    7.34  5.7e-12 ***
-#> Income        0.74058    0.04012   18.46  < 2e-16 ***
-#> Production    0.04717    0.02314    2.04    0.043 *  
-#> Unemployment -0.17469    0.09551   -1.83    0.069 .  
-#> Savings      -0.05289    0.00292  -18.09  < 2e-16 ***
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Residual standard error: 0.31 on 193 degrees of freedom
-#> Multiple R-squared: 0.768,   Adjusted R-squared: 0.763
-#> F-statistic:  160 on 4 and 193 DF, p-value: <2e-16
 augment(fit_consMR) %>%
   ggplot(aes(x = Quarter)) +
   geom_line(aes(y = Consumption, colour = "Data")) +
@@ -1498,7 +1035,7 @@ augment(fit_consMR) %>%
 
 
 ```
-# 7.3 Evaluating the regression model `r tags$a(href='https://otexts.com/fpp3/regression-evaluation.html')` 
+# 7.3 Evaluating the regression model `r shiny::tags$a(href='https://otexts.com/fpp3/regression-evaluation.html')` 
 
 
 ```{r}
@@ -1507,10 +1044,6 @@ augment(fit_consMR) %>%
 fit_consMR %>% gg_tsresiduals()
 augment(fit_consMR) %>%
   features(.innov, ljung_box, lag = 10, dof = 5)
-#> # A tibble: 1 × 3
-#>   .model lb_stat lb_pvalue
-#>   <chr>    <dbl>     <dbl>
-#> 1 tslm      18.9   0.00204
 us_change %>%
   left_join(residuals(fit_consMR), by = "Quarter") %>%
   pivot_longer(Income:Unemployment,
@@ -1527,28 +1060,11 @@ fit <- aus_airpassengers %>%
   left_join(guinea_rice, by = "Year") %>%
   model(TSLM(Passengers ~ Production))
 report(fit)
-#> Series: Passengers 
-#> Model: TSLM 
-#> 
-#> Residuals:
-#>    Min     1Q Median     3Q    Max 
-#> -5.945 -1.892 -0.327  1.862 10.421 
-#> 
-#> Coefficients:
-#>             Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)    -7.49       1.20   -6.23  2.3e-07 ***
-#> Production     40.29       1.34   30.13  < 2e-16 ***
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Residual standard error: 3.24 on 40 degrees of freedom
-#> Multiple R-squared: 0.958,   Adjusted R-squared: 0.957
-#> F-statistic:  908 on 1 and 40 DF, p-value: <2e-16
 fit %>% gg_tsresiduals()
 
 
 ```
-# 7.4 Some useful predictors `r tags$a(href='https://otexts.com/fpp3/useful-predictors.html')` 
+# 7.4 Some useful predictors `r shiny::tags$a(href='https://otexts.com/fpp3/useful-predictors.html')` 
 
 
 ```{r}
@@ -1563,26 +1079,6 @@ recent_production %>%
 fit_beer <- recent_production %>%
   model(TSLM(Beer ~ trend() + season()))
 report(fit_beer)
-#> Series: Beer 
-#> Model: TSLM 
-#> 
-#> Residuals:
-#>    Min     1Q Median     3Q    Max 
-#> -42.90  -7.60  -0.46   7.99  21.79 
-#> 
-#> Coefficients:
-#>               Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)   441.8004     3.7335  118.33  < 2e-16 ***
-#> trend()        -0.3403     0.0666   -5.11  2.7e-06 ***
-#> season()year2 -34.6597     3.9683   -8.73  9.1e-13 ***
-#> season()year3 -17.8216     4.0225   -4.43  3.4e-05 ***
-#> season()year4  72.7964     4.0230   18.09  < 2e-16 ***
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Residual standard error: 12.2 on 69 degrees of freedom
-#> Multiple R-squared: 0.924,   Adjusted R-squared: 0.92
-#> F-statistic:  211 on 4 and 69 DF, p-value: <2e-16
 augment(fit_beer) %>%
   ggplot(aes(x = Quarter)) +
   geom_line(aes(y = Beer, colour = "Data")) +
@@ -1604,30 +1100,10 @@ augment(fit_beer) %>%
 fourier_beer <- recent_production %>%
   model(TSLM(Beer ~ trend() + fourier(K = 2)))
 report(fourier_beer)
-#> Series: Beer 
-#> Model: TSLM 
-#> 
-#> Residuals:
-#>    Min     1Q Median     3Q    Max 
-#> -42.90  -7.60  -0.46   7.99  21.79 
-#> 
-#> Coefficients:
-#>                    Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)        446.8792     2.8732  155.53  < 2e-16 ***
-#> trend()             -0.3403     0.0666   -5.11  2.7e-06 ***
-#> fourier(K = 2)C1_4   8.9108     2.0112    4.43  3.4e-05 ***
-#> fourier(K = 2)S1_4 -53.7281     2.0112  -26.71  < 2e-16 ***
-#> fourier(K = 2)C2_4 -13.9896     1.4226   -9.83  9.3e-15 ***
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Residual standard error: 12.2 on 69 degrees of freedom
-#> Multiple R-squared: 0.924,   Adjusted R-squared: 0.92
-#> F-statistic:  211 on 4 and 69 DF, p-value: <2e-16
 
 
 ```
-# 7.5 Selecting predictors `r tags$a(href='https://otexts.com/fpp3/selecting-predictors.html')` 
+# 7.5 Selecting predictors `r shiny::tags$a(href='https://otexts.com/fpp3/selecting-predictors.html')` 
 
 
 ```{r}
@@ -1635,14 +1111,10 @@ report(fourier_beer)
 
 glance(fit_consMR) %>%
   select(adj_r_squared, CV, AIC, AICc, BIC)
-#> # A tibble: 1 × 5
-#>   adj_r_squared    CV   AIC  AICc   BIC
-#>           <dbl> <dbl> <dbl> <dbl> <dbl>
-#> 1         0.763 0.104 -457. -456. -437.
 
 
 ```
-# 7.6 Forecasting with regression `r tags$a(href='https://otexts.com/fpp3/forecasting-regression.html')` 
+# 7.6 Forecasting with regression `r shiny::tags$a(href='https://otexts.com/fpp3/forecasting-regression.html')` 
 
 
 ```{r}
@@ -1693,7 +1165,7 @@ us_change %>%
 
 
 ```
-# 7.7 Nonlinear regression `r tags$a(href='https://otexts.com/fpp3/nonlinear-regression.html')` 
+# 7.7 Nonlinear regression `r shiny::tags$a(href='https://otexts.com/fpp3/nonlinear-regression.html')` 
 
 
 ```{r}
@@ -1723,7 +1195,7 @@ boston_men %>%
 ```
 
 
-# 7.10 Exercises `r tags$a(href='https://otexts.com/fpp3/regression-exercises.html')` 
+# 7.10 Exercises `r shiny::tags$a(href='https://otexts.com/fpp3/regression-exercises.html')` 
 
 
 ```{r}
@@ -1748,7 +1220,7 @@ jan14_vic_elec %>%
 ```
 
 
-# 8.1 Simple exponential smoothing `r tags$a(href='https://otexts.com/fpp3/ses.html')` 
+# 8.1 Simple exponential smoothing `r shiny::tags$a(href='https://otexts.com/fpp3/ses.html')` 
 
 
 ```{r}
@@ -1773,7 +1245,7 @@ fc %>%
 
 
 ```
-# 8.2 Methods with trend `r tags$a(href='https://otexts.com/fpp3/holt.html')` 
+# 8.2 Methods with trend `r shiny::tags$a(href='https://otexts.com/fpp3/holt.html')` 
 
 
 ```{r}
@@ -1815,12 +1287,6 @@ www_usage %>%
   ) %>%
   forecast(h = 1) %>%
   accuracy(www_usage)
-#> # A tibble: 3 × 10
-#>   .model .type     ME  RMSE   MAE   MPE  MAPE  MASE RMSSE  ACF1
-#>   <chr>  <chr>  <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
-#> 1 Damped Test  0.288   3.69  3.00 0.347  2.26 0.663 0.636 0.336
-#> 2 Holt   Test  0.0610  3.87  3.17 0.244  2.38 0.701 0.668 0.296
-#> 3 SES    Test  1.46    6.05  4.81 0.904  3.55 1.06  1.04  0.803
 fit <- www_usage %>%
   model(
     Damped = ETS(value ~ error("A") + trend("Ad") +
@@ -1828,14 +1294,6 @@ fit <- www_usage %>%
   )
 # Estimated parameters:
 tidy(fit)
-#> # A tibble: 5 × 3
-#>   .model term  estimate
-#>   <chr>  <chr>    <dbl>
-#> 1 Damped alpha   1.00  
-#> 2 Damped beta    0.997 
-#> 3 Damped phi     0.815 
-#> 4 Damped l[0]   90.4   
-#> 5 Damped b[0]   -0.0173
 fit %>%
   forecast(h = 10) %>%
   autoplot(www_usage) +
@@ -1844,7 +1302,7 @@ fit %>%
 
 
 ```
-# 8.3 Methods with seasonality `r tags$a(href='https://otexts.com/fpp3/holt-winters.html')` 
+# 8.3 Methods with seasonality `r shiny::tags$a(href='https://otexts.com/fpp3/holt-winters.html')` 
 
 
 ```{r}
@@ -1885,7 +1343,7 @@ sth_cross_ped %>%
 ```
 
 
-# 8.6 Estimation and model selection `r tags$a(href='https://otexts.com/fpp3/ets-estimation.html')` 
+# 8.6 Estimation and model selection `r shiny::tags$a(href='https://otexts.com/fpp3/ets-estimation.html')` 
 
 
 ```{r}
@@ -1897,27 +1355,13 @@ aus_holidays <- tourism %>%
 fit <- aus_holidays %>%
   model(ETS(Trips))
 report(fit)
-#> Series: Trips 
-#> Model: ETS(M,N,A) 
-#>   Smoothing parameters:
-#>     alpha = 0.3484 
-#>     gamma = 1e-04 
-#> 
-#>   Initial states:
-#>   l[0]    s[0]   s[-1]   s[-2] s[-3]
-#>  9.727 -0.5376 -0.6884 -0.2934 1.519
-#> 
-#>   sigma^2:  0.0022
-#> 
-#>   AIC  AICc   BIC 
-#> 226.2 227.8 242.9
 components(fit) %>%
   autoplot() +
   labs(title = "ETS(M,N,A) components")
 
 
 ```
-# 8.7 Forecasting with ETS models `r tags$a(href='https://otexts.com/fpp3/ets-forecasting.html')` 
+# 8.7 Forecasting with ETS models `r shiny::tags$a(href='https://otexts.com/fpp3/ets-forecasting.html')` 
 
 
 ```{r}
@@ -1934,7 +1378,7 @@ fit %>%
 
 
 
-# 9.1 Stationarity and differencing `r tags$a(href='https://otexts.com/fpp3/stationarity.html')` 
+# 9.1 Stationarity and differencing `r shiny::tags$a(href='https://otexts.com/fpp3/stationarity.html')` 
 
 
 ```{r}
@@ -1949,10 +1393,6 @@ google_2015 %>% ACF(difference(Close)) %>%
 google_2015 %>%
   mutate(diff_close = difference(Close)) %>%
   features(diff_close, ljung_box, lag = 10)
-#> # A tibble: 1 × 3
-#>   Symbol lb_stat lb_pvalue
-#>   <chr>    <dbl>     <dbl>
-#> 1 GOOG      7.91     0.637
 PBS %>%
   filter(ATC2 == "H02") %>%
   summarise(Cost = sum(Cost)/1e6) %>%
@@ -1977,47 +1417,27 @@ PBS %>%
   labs(title = "Corticosteroid drug sales", y = NULL)
 google_2015 %>%
   features(Close, unitroot_kpss)
-#> # A tibble: 1 × 3
-#>   Symbol kpss_stat kpss_pvalue
-#>   <chr>      <dbl>       <dbl>
-#> 1 GOOG        3.56        0.01
 google_2015 %>%
   mutate(diff_close = difference(Close)) %>%
   features(diff_close, unitroot_kpss)
-#> # A tibble: 1 × 3
-#>   Symbol kpss_stat kpss_pvalue
-#>   <chr>      <dbl>       <dbl>
-#> 1 GOOG      0.0989         0.1
 google_2015 %>%
   features(Close, unitroot_ndiffs)
-#> # A tibble: 1 × 2
-#>   Symbol ndiffs
-#>   <chr>   <int>
-#> 1 GOOG        1
 aus_total_retail <- aus_retail %>%
   summarise(Turnover = sum(Turnover))
 aus_total_retail %>%
   mutate(log_turnover = log(Turnover)) %>%
   features(log_turnover, unitroot_nsdiffs)
-#> # A tibble: 1 × 1
-#>   nsdiffs
-#>     <int>
-#> 1       1
 
 aus_total_retail %>%
   mutate(log_turnover = difference(log(Turnover), 12)) %>%
   features(log_turnover, unitroot_ndiffs)
-#> # A tibble: 1 × 1
-#>   ndiffs
-#>    <int>
-#> 1      1
 
 
 ```
 
 
 
-# 9.5 Non-seasonal ARIMA models `r tags$a(href='https://otexts.com/fpp3/non-seasonal-arima.html')` 
+# 9.5 Non-seasonal ARIMA models `r shiny::tags$a(href='https://otexts.com/fpp3/non-seasonal-arima.html')` 
 
 
 ```{r}
@@ -2031,16 +1451,6 @@ fit <- global_economy %>%
   filter(Code == "EGY") %>%
   model(ARIMA(Exports))
 report(fit)
-#> Series: Exports 
-#> Model: ARIMA(2,0,1) w/ mean 
-#> 
-#> Coefficients:
-#>          ar1      ar2      ma1  constant
-#>       1.6764  -0.8034  -0.6896    2.5623
-#> s.e.  0.1111   0.0928   0.1492    0.1161
-#> 
-#> sigma^2 estimated as 8.046:  log likelihood=-141.6
-#> AIC=293.1   AICc=294.3   BIC=303.4
 fit %>% forecast(h=10) %>%
   autoplot(global_economy) +
   labs(y = "% of GDP", title = "Egyptian exports")
@@ -2056,21 +1466,11 @@ fit2 <- global_economy %>%
   filter(Code == "EGY") %>%
   model(ARIMA(Exports ~ pdq(4,0,0)))
 report(fit2)
-#> Series: Exports 
-#> Model: ARIMA(4,0,0) w/ mean 
-#> 
-#> Coefficients:
-#>          ar1      ar2     ar3      ar4  constant
-#>       0.9861  -0.1715  0.1807  -0.3283    6.6922
-#> s.e.  0.1247   0.1865  0.1865   0.1273    0.3562
-#> 
-#> sigma^2 estimated as 7.885:  log likelihood=-140.5
-#> AIC=293.1   AICc=294.7   BIC=305.4
 
 
 ```
 
-# 9.7 ARIMA modelling in fable `r tags$a(href='https://otexts.com/fpp3/arima-r.html')` 
+# 9.7 ARIMA modelling in fable `r shiny::tags$a(href='https://otexts.com/fpp3/arima-r.html')` 
 
 
 ```{r}
@@ -2093,32 +1493,13 @@ caf_fit <- global_economy %>%
 
 caf_fit %>% pivot_longer(!Country, names_to = "Model name",
                          values_to = "Orders")
-#> # A mable: 4 x 3
-#> # Key:     Country, Model name [4]
-#>   Country                  `Model name`         Orders
-#>   <fct>                    <chr>               <model>
-#> 1 Central African Republic arima210     <ARIMA(2,1,0)>
-#> 2 Central African Republic arima013     <ARIMA(0,1,3)>
-#> 3 Central African Republic stepwise     <ARIMA(2,1,2)>
-#> 4 Central African Republic search       <ARIMA(3,1,0)>
 glance(caf_fit) %>% arrange(AICc) %>% select(.model:BIC)
-#> # A tibble: 4 × 6
-#>   .model   sigma2 log_lik   AIC  AICc   BIC
-#>   <chr>     <dbl>   <dbl> <dbl> <dbl> <dbl>
-#> 1 search     6.52   -133.  274.  275.  282.
-#> 2 arima210   6.71   -134.  275.  275.  281.
-#> 3 arima013   6.54   -133.  274.  275.  282.
-#> 4 stepwise   6.42   -132.  274.  275.  284.
 caf_fit %>%
   select(search) %>%
   gg_tsresiduals()
 augment(caf_fit) %>%
   filter(.model=='search') %>%
   features(.innov, ljung_box, lag = 10, dof = 3)
-#> # A tibble: 1 × 4
-#>   Country                  .model lb_stat lb_pvalue
-#>   <fct>                    <chr>    <dbl>     <dbl>
-#> 1 Central African Republic search    5.75     0.569
 caf_fit %>%
   forecast(h=5) %>%
   filter(.model=='search') %>%
@@ -2128,7 +1509,7 @@ gg_arma(caf_fit %>% select(Country, search))
 
 ```
 
-# 9.9 Seasonal ARIMA models `r tags$a(href='https://otexts.com/fpp3/seasonal-arima.html')` 
+# 9.9 Seasonal ARIMA models `r shiny::tags$a(href='https://otexts.com/fpp3/seasonal-arima.html')` 
 
 
 ```{r}
@@ -2158,28 +1539,11 @@ fit <- leisure %>%
   )
 fit %>% pivot_longer(everything(), names_to = "Model name",
                      values_to = "Orders")
-#> # A mable: 3 x 2
-#> # Key:     Model name [3]
-#>   `Model name`                    Orders
-#>   <chr>                          <model>
-#> 1 arima012011  <ARIMA(0,1,2)(0,1,1)[12]>
-#> 2 arima210011  <ARIMA(2,1,0)(0,1,1)[12]>
-#> 3 auto         <ARIMA(2,1,0)(1,1,1)[12]>
 glance(fit) %>% arrange(AICc) %>% select(.model:BIC)
-#> # A tibble: 3 × 6
-#>   .model       sigma2 log_lik   AIC  AICc   BIC
-#>   <chr>         <dbl>   <dbl> <dbl> <dbl> <dbl>
-#> 1 auto        0.00142    395. -780. -780. -763.
-#> 2 arima210011 0.00145    392. -776. -776. -763.
-#> 3 arima012011 0.00146    391. -775. -775. -761.
 fit %>% select(auto) %>% gg_tsresiduals(lag=36)
 augment(fit) %>%
   filter(.model == "auto") %>%
   features(.innov, ljung_box, lag=24, dof=4)
-#> # A tibble: 1 × 3
-#>   .model lb_stat lb_pvalue
-#>   <chr>    <dbl>     <dbl>
-#> 1 auto      16.6     0.680
 forecast(fit, h=36) %>%
   filter(.model=='auto') %>%
   autoplot(leisure) +
@@ -2202,10 +1566,6 @@ fit <- h02 %>%
 fit %>% gg_tsresiduals(lag_max=36)
 augment(fit) %>%
   features(.innov, ljung_box, lag = 36, dof = 6)
-#> # A tibble: 1 × 3
-#>   .model                                             lb_stat lb_pvalue
-#>   <chr>                                                <dbl>     <dbl>
-#> 1 ARIMA(log(Cost) ~ 0 + pdq(3, 0, 1) + PDQ(0, 1, 2))    50.7    0.0104
 h02 %>%
   model(ARIMA(log(Cost) ~ 0 + pdq(3,0,1) + PDQ(0,1,2))) %>%
   forecast() %>%
@@ -2215,7 +1575,7 @@ h02 %>%
 
 
 ```
-# 9.10 ARIMA vs ETS `r tags$a(href='https://otexts.com/fpp3/arima-ets.html')` 
+# 9.10 ARIMA vs ETS `r shiny::tags$a(href='https://otexts.com/fpp3/arima-ets.html')` 
 
 
 ```{r}
@@ -2235,11 +1595,6 @@ aus_economy %>%
   forecast(h = 1) %>%
   accuracy(aus_economy) %>%
   select(.model, RMSE:MAPE)
-#> # A tibble: 2 × 5
-#>   .model              RMSE    MAE   MPE  MAPE
-#>   <chr>              <dbl>  <dbl> <dbl> <dbl>
-#> 1 ARIMA(Population) 0.194  0.0789 0.277 0.509
-#> 2 ETS(Population)   0.0774 0.0543 0.112 0.327
 aus_economy %>%
   model(ETS(Population)) %>%
   forecast(h = "5 years") %>%
@@ -2252,47 +1607,15 @@ cement <- aus_production %>%
 train <- cement %>% filter_index(. ~ "2007 Q4")
 fit_arima <- train %>% model(ARIMA(Cement))
 report(fit_arima)
-#> Series: Cement 
-#> Model: ARIMA(1,0,1)(2,1,1)[4] w/ drift 
-#> 
-#> Coefficients:
-#>          ar1      ma1   sar1     sar2     sma1  constant
-#>       0.8886  -0.2366  0.081  -0.2345  -0.8979     5.388
-#> s.e.  0.0842   0.1334  0.157   0.1392   0.1780     1.484
-#> 
-#> sigma^2 estimated as 11456:  log likelihood=-463.5
-#> AIC=941   AICc=942.7   BIC=957.4
 fit_arima %>% gg_tsresiduals(lag_max = 16)
 augment(fit_arima) %>%
   features(.innov, ljung_box, lag = 16, dof = 6)
-#> # A tibble: 1 × 3
-#>   .model        lb_stat lb_pvalue
-#>   <chr>           <dbl>     <dbl>
-#> 1 ARIMA(Cement)    6.37     0.783
 fit_ets <- train %>% model(ETS(Cement))
 report(fit_ets)
-#> Series: Cement 
-#> Model: ETS(M,N,M) 
-#>   Smoothing parameters:
-#>     alpha = 0.7534 
-#>     gamma = 1e-04 
-#> 
-#>   Initial states:
-#>  l[0]  s[0] s[-1] s[-2]  s[-3]
-#>  1695 1.031 1.045 1.011 0.9122
-#> 
-#>   sigma^2:  0.0034
-#> 
-#>  AIC AICc  BIC 
-#> 1104 1106 1121
 fit_ets %>%
   gg_tsresiduals(lag_max = 16)
 augment(fit_ets) %>%
   features(.innov, ljung_box, lag = 16, dof = 6)
-#> # A tibble: 1 × 3
-#>   .model      lb_stat lb_pvalue
-#>   <chr>         <dbl>     <dbl>
-#> 1 ETS(Cement)    10.0     0.438
 # Generate forecasts and compare accuracy over the test set
 bind_rows(
     fit_arima %>% accuracy(),
@@ -2301,13 +1624,6 @@ bind_rows(
     fit_ets %>% forecast(h = 10) %>% accuracy(cement)
   ) %>%
   select(-ME, -MPE, -ACF1)
-#> # A tibble: 4 × 7
-#>   .model        .type     RMSE   MAE  MAPE  MASE RMSSE
-#>   <chr>         <chr>    <dbl> <dbl> <dbl> <dbl> <dbl>
-#> 1 ARIMA(Cement) Training  100.  79.9  4.37 0.546 0.582
-#> 2 ETS(Cement)   Training  103.  80.0  4.41 0.547 0.596
-#> 3 ARIMA(Cement) Test      216. 186.   8.68 1.27  1.26 
-#> 4 ETS(Cement)   Test      222. 191.   8.85 1.30  1.29
 cement %>%
   model(ARIMA(Cement)) %>%
   forecast(h="3 years") %>%
@@ -2317,26 +1633,10 @@ cement %>%
 
 
 ```
-# 9.11 Exercises `r tags$a(href='https://otexts.com/fpp3/arima-exercises.html')` 
-
-
-```{r}
-
-
-y <- numeric(100)
-e <- rnorm(100)
-for(i in 2:100)
-  y[i] <- 0.6*y[i-1] + e[i]
-sim <- tsibble(idx = seq_len(100), y = y, index = idx)
-install.packages("Quandl")
-y <- as_tsibble(Quandl::Quandl("?????"), index = Date)
-
-
-```
 
 
 
-# 10.2 Regression with ARIMA errors using fable `r tags$a(href='https://otexts.com/fpp3/regarima.html')` 
+# 10.2 Regression with ARIMA errors using fable `r shiny::tags$a(href='https://otexts.com/fpp3/regarima.html')` 
 
 
 ```{r}
@@ -2354,16 +1654,6 @@ us_change %>%
 fit <- us_change %>%
   model(ARIMA(Consumption ~ Income))
 report(fit)
-#> Series: Consumption 
-#> Model: LM w/ ARIMA(1,0,2) errors 
-#> 
-#> Coefficients:
-#>          ar1      ma1     ma2  Income  intercept
-#>       0.7070  -0.6172  0.2066  0.1976     0.5949
-#> s.e.  0.1068   0.1218  0.0741  0.0462     0.0850
-#> 
-#> sigma^2 estimated as 0.3113:  log likelihood=-163
-#> AIC=338.1   AICc=338.5   BIC=357.8
 bind_rows(
     `Regression residuals` =
         as_tibble(residuals(fit, type = "regression")),
@@ -2381,14 +1671,10 @@ bind_rows(
 fit %>% gg_tsresiduals()
 augment(fit) %>%
   features(.innov, ljung_box, dof = 5, lag = 8)
-#> # A tibble: 1 × 3
-#>   .model                      lb_stat lb_pvalue
-#>   <chr>                         <dbl>     <dbl>
-#> 1 ARIMA(Consumption ~ Income)    5.21     0.157
 
 
 ```
-# 10.3 Forecasting `r tags$a(href='https://otexts.com/fpp3/forecasting.html')` 
+# 10.3 Forecasting `r shiny::tags$a(href='https://otexts.com/fpp3/forecasting.html')` 
 
 
 ```{r}
@@ -2429,10 +1715,6 @@ fit <- vic_elec_daily %>%
 fit %>% gg_tsresiduals()
 augment(fit) %>%
   features(.innov, ljung_box, dof = 9, lag = 14)
-#> # A tibble: 1 × 3
-#>   .model                                                     lb_stat lb_pvalue
-#>   <chr>                                                        <dbl>     <dbl>
-#> 1 "ARIMA(Demand ~ Temperature + I(Temperature^2) + (Day_Typ…    28.4 0.0000304
 vic_elec_future <- new_data(vic_elec_daily, 14) %>%
   mutate(
     Temperature = 26,
@@ -2450,7 +1732,7 @@ forecast(fit, vic_elec_future) %>%
 
 
 ```
-# 10.4 Stochastic and deterministic trends `r tags$a(href='https://otexts.com/fpp3/stochastic-and-deterministic-trends.html')` 
+# 10.4 Stochastic and deterministic trends `r shiny::tags$a(href='https://otexts.com/fpp3/stochastic-and-deterministic-trends.html')` 
 
 
 ```{r}
@@ -2464,29 +1746,9 @@ fit_deterministic <- aus_airpassengers %>%
   model(deterministic = ARIMA(Passengers ~ 1 + trend() +
                                 pdq(d = 0)))
 report(fit_deterministic)
-#> Series: Passengers 
-#> Model: LM w/ ARIMA(1,0,0) errors 
-#> 
-#> Coefficients:
-#>          ar1  trend()  intercept
-#>       0.9564   1.4151     0.9014
-#> s.e.  0.0362   0.1972     7.0751
-#> 
-#> sigma^2 estimated as 4.343:  log likelihood=-100.88
-#> AIC=209.77   AICc=210.72   BIC=217.17
 fit_stochastic <- aus_airpassengers %>%
   model(stochastic = ARIMA(Passengers ~ pdq(d = 1)))
 report(fit_stochastic)
-#> Series: Passengers 
-#> Model: ARIMA(0,1,0) w/ drift 
-#> 
-#> Coefficients:
-#>       constant
-#>         1.4191
-#> s.e.    0.3014
-#> 
-#> sigma^2 estimated as 4.271:  log likelihood=-98.16
-#> AIC=200.31   AICc=200.59   BIC=203.97
 aus_airpassengers %>%
   autoplot(Passengers) +
   autolayer(fit_stochastic %>% forecast(h = 20),
@@ -2498,7 +1760,7 @@ aus_airpassengers %>%
 
 
 ```
-# 10.5 Dynamic harmonic regression `r tags$a(href='https://otexts.com/fpp3/dhr.html')` 
+# 10.5 Dynamic harmonic regression `r shiny::tags$a(href='https://otexts.com/fpp3/dhr.html')` 
 
 
 ```{r}
@@ -2535,7 +1797,7 @@ fit %>%
 
 
 ```
-# 10.6 Lagged predictors `r tags$a(href='https://otexts.com/fpp3/lagged-predictors.html')` 
+# 10.6 Lagged predictors `r shiny::tags$a(href='https://otexts.com/fpp3/lagged-predictors.html')` 
 
 
 ```{r}
@@ -2563,27 +1825,10 @@ fit <- insurance %>%
                  lag(TVadverts, 2) + lag(TVadverts, 3))
   )
 glance(fit)
-#> # A tibble: 4 × 8
-#>   .model sigma2 log_lik   AIC  AICc   BIC ar_roots  ma_roots 
-#>   <chr>   <dbl>   <dbl> <dbl> <dbl> <dbl> <list>    <list>   
-#> 1 lag0    0.265   -28.3  66.6  68.3  75.0 <cpl [2]> <cpl [0]>
-#> 2 lag1    0.209   -24.0  58.1  59.9  66.5 <cpl [1]> <cpl [1]>
-#> 3 lag2    0.215   -24.0  60.0  62.6  70.2 <cpl [1]> <cpl [1]>
-#> 4 lag3    0.206   -22.2  60.3  65.0  73.8 <cpl [1]> <cpl [1]>
 fit_best <- insurance %>%
   model(ARIMA(Quotes ~ pdq(d = 0) +
               TVadverts + lag(TVadverts)))
 report(fit_best)
-#> Series: Quotes 
-#> Model: LM w/ ARIMA(1,0,2) errors 
-#> 
-#> Coefficients:
-#>          ar1     ma1     ma2  TVadverts  lag(TVadverts)  intercept
-#>       0.5123  0.9169  0.4591     1.2527          0.1464     2.1554
-#> s.e.  0.1849  0.2051  0.1895     0.0588          0.0531     0.8595
-#> 
-#> sigma^2 estimated as 0.2166:  log likelihood=-23.94
-#> AIC=61.88   AICc=65.38   BIC=73.7
 insurance_future <- new_data(insurance, 20) %>%
   mutate(TVadverts = 8)
 fit_best %>%
@@ -2596,7 +1841,7 @@ fit_best %>%
 
 
 ```
-# 10.7 Exercises `r tags$a(href='https://otexts.com/fpp3/dynamic-exercises.html')` 
+# 10.7 Exercises `r shiny::tags$a(href='https://otexts.com/fpp3/dynamic-exercises.html')` 
 
 
 ```{r}
@@ -2620,7 +1865,7 @@ vic_elec_daily <- vic_elec %>%
 ```
 
 
-# 11.1 Hierarchical and grouped time series `r tags$a(href='https://otexts.com/fpp3/hts.html')` 
+# 11.1 Hierarchical and grouped time series `r shiny::tags$a(href='https://otexts.com/fpp3/hts.html')` 
 
 
 ```{r}
@@ -2639,21 +1884,6 @@ tourism <- tsibble::tourism %>%
 tourism_hts <- tourism %>%
   aggregate_key(State / Region, Trips = sum(Trips))
 tourism_hts
-#> # A tsibble: 6,800 x 4 [1Q]
-#> # Key:       State, Region [85]
-#>    Quarter State        Region        Trips
-#>      <qtr> <chr*>       <chr*>        <dbl>
-#>  1 1998 Q1 <aggregated> <aggregated> 23182.
-#>  2 1998 Q2 <aggregated> <aggregated> 20323.
-#>  3 1998 Q3 <aggregated> <aggregated> 19827.
-#>  4 1998 Q4 <aggregated> <aggregated> 20830.
-#>  5 1999 Q1 <aggregated> <aggregated> 22087.
-#>  6 1999 Q2 <aggregated> <aggregated> 21458.
-#>  7 1999 Q3 <aggregated> <aggregated> 19914.
-#>  8 1999 Q4 <aggregated> <aggregated> 20028.
-#>  9 2000 Q1 <aggregated> <aggregated> 22339.
-#> 10 2000 Q2 <aggregated> <aggregated> 19941.
-#> # … with 6,790 more rows
 tourism_hts %>%
   filter(is_aggregated(Region)) %>%
   autoplot(Trips) +
@@ -2691,14 +1921,14 @@ tourism_full <- tourism %>%
 
 
 ```
-# 11.2 Single level approaches `r tags$a(href='https://otexts.com/fpp3/single-level.html')` 
+# 11.2 Single level approaches `r shiny::tags$a(href='https://otexts.com/fpp3/single-level.html')` 
 
 
 ```{r}
 
 
 tourism_states <- tourism %>%
-  aggregate_key(State, Trips = sum(Trips))
+  aggregate_key(State, Trips = sum(Trips,na.rm=TRUE))
 fcasts_state <- tourism_states %>%
   filter(!is_aggregated(State)) %>%
   model(ets = ETS(Trips)) %>%
@@ -2711,28 +1941,17 @@ tourism_states %>%
   model(ets = ETS(Trips)) %>%
   reconcile(bu = bottom_up(ets)) %>%
   forecast()
-#> # A fable: 144 x 5 [1Q]
-#> # Key:     State, .model [18]
-#>    State  .model Quarter         Trips .mean
-#>    <chr*> <chr>    <qtr>        <dist> <dbl>
-#>  1 ACT    ets    2018 Q1  N(701, 7651)  701.
-#>  2 ACT    ets    2018 Q2  N(717, 8032)  717.
-#>  3 ACT    ets    2018 Q3  N(734, 8440)  734.
-#>  4 ACT    ets    2018 Q4  N(750, 8882)  750.
-#>  5 ACT    ets    2019 Q1  N(767, 9368)  767.
-#>  6 ACT    ets    2019 Q2  N(784, 9905)  784.
-#>  7 ACT    ets    2019 Q3 N(800, 10503)  800.
-#>  8 ACT    ets    2019 Q4 N(817, 11171)  817.
-#>  9 ACT    bu     2018 Q1  N(701, 7651)  701.
-#> 10 ACT    bu     2018 Q2  N(717, 8032)  717.
-#> # … with 134 more rows
-data %>% aggregate_key() %>% model() %>%
-  reconcile() %>% forecast()
+
+# data %>% 
+#   aggregate_key() %>% 
+#   model() %>%
+#   reconcile() %>% 
+#   forecast()
 
 
 ```
 
-# 11.4 Forecasting Australian domestic tourism `r tags$a(href='https://otexts.com/fpp3/tourism.html')` 
+# 11.4 Forecasting Australian domestic tourism `r shiny::tags$a(href='https://otexts.com/fpp3/tourism.html')` 
 
 
 ```{r}
@@ -2774,18 +1993,11 @@ fc %>%
   ) %>%
   group_by(.model) %>%
   summarise(rmse = mean(rmse), mase = mean(mase))
-#> # A tibble: 4 × 3
-#>   .model  rmse  mase
-#>   <chr>  <dbl> <dbl>
-#> 1 base   1721.  1.53
-#> 2 bu     3070.  3.16
-#> 3 mint   2157.  2.09
-#> 4 ols    1804.  1.63
 
 
 ```
 
-# 11.6 Forecasting Australian prison population `r tags$a(href='https://otexts.com/fpp3/prison.html')` 
+# 11.6 Forecasting Australian prison population `r shiny::tags$a(href='https://otexts.com/fpp3/prison.html')` 
 
 
 ```{r}
@@ -2829,14 +2041,7 @@ fc %>%
            ) %>%
   group_by(.model) %>%
   summarise(mase = mean(mase), sspc = mean(ss) * 100)
-#> # A tibble: 3 × 3
-#>   .model     mase  sspc
-#>   <chr>     <dbl> <dbl>
-#> 1 base      1.72   55.9
-#> 2 bottom_up 1.84   33.5
-#> 3 MinT      0.895  76.8
 
 
 ```
-
 
