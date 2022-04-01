@@ -41,7 +41,7 @@ ggplot2::theme_set(theme_minimal())
 
 
 
-# Forecasting: Principles and Practice `r shiny::tags$a(href='https://otexts.com/fpp3/./')` 
+# Forecasting: Principles and Practice `r shiny::tags$a("Forecasting: Principles and Practice",href='https://otexts.com/fpp3/./')` 
 
 
 ```{r}
@@ -51,7 +51,7 @@ library(fpp3)
 
 
 ```
-# Preface `r shiny::tags$a(href='https://otexts.com/fpp3/index.html')` 
+# Preface `r shiny::tags$a("Preface",href='https://otexts.com/fpp3/index.html')` 
 
 
 ```{r}
@@ -72,7 +72,7 @@ library(fpp3)
 
 
 
-# 2.1 tsibble objects `r shiny::tags$a(href='https://otexts.com/fpp3/tsibbles.html')` 
+# 2.1 tsibble objects `r shiny::tags$a("2.1 tsibble objects",href='https://otexts.com/fpp3/tsibbles.html')` 
 
 
 ```{r}
@@ -111,7 +111,7 @@ prison
 
 
 ```
-# 2.2 Time plots `r shiny::tags$a(href='https://otexts.com/fpp3/time-plots.html')` 
+# 2.2 Time plots `r shiny::tags$a("2.2 Time plots",href='https://otexts.com/fpp3/time-plots.html')` 
 
 
 ```{r}
@@ -131,7 +131,7 @@ autoplot(a10, Cost) +
 
 ```
 
-# 2.4 Seasonal plots `r shiny::tags$a(href='https://otexts.com/fpp3/seasonal-plots.html')` 
+# 2.4 Seasonal plots `r shiny::tags$a("2.4 Seasonal plots",href='https://otexts.com/fpp3/seasonal-plots.html')` 
 
 
 ```{r}
@@ -152,7 +152,7 @@ vic_elec %>% gg_season(Demand, period = "year") +
 
 
 ```
-# 2.5 Seasonal subseries plots `r shiny::tags$a(href='https://otexts.com/fpp3/subseries.html')` 
+# 2.5 Seasonal subseries plots `r shiny::tags$a("2.5 Seasonal subseries plots",href='https://otexts.com/fpp3/subseries.html')` 
 
 
 ```{r}
@@ -182,7 +182,7 @@ holidays %>%
 
 
 ```
-# 2.6 Scatterplots `r shiny::tags$a(href='https://otexts.com/fpp3/scatterplots.html')` 
+# 2.6 Scatterplots `r shiny::tags$a("2.6 Scatterplots",href='https://otexts.com/fpp3/scatterplots.html')` 
 
 
 ```{r}
@@ -221,7 +221,7 @@ visitors %>%
 
 
 ```
-# 2.7 Lag plots `r shiny::tags$a(href='https://otexts.com/fpp3/lag-plots.html')` 
+# 2.7 Lag plots `r shiny::tags$a("2.7 Lag plots",href='https://otexts.com/fpp3/lag-plots.html')` 
 
 
 ```{r}
@@ -235,7 +235,7 @@ recent_production %>%
 
 
 ```
-# 2.8 Autocorrelation `r shiny::tags$a(href='https://otexts.com/fpp3/acf.html')` 
+# 2.8 Autocorrelation `r shiny::tags$a("2.8 Autocorrelation",href='https://otexts.com/fpp3/acf.html')` 
 
 
 ```{r}
@@ -252,7 +252,7 @@ a10 %>%
 
 
 ```
-# 2.9 White noise `r shiny::tags$a(href='https://otexts.com/fpp3/wn.html')` 
+# 2.9 White noise `r shiny::tags$a("2.9 White noise",href='https://otexts.com/fpp3/wn.html')` 
 
 
 ```{r}
@@ -267,7 +267,7 @@ y %>%
 
 
 ```
-# 2.10 Exercises `r shiny::tags$a(href='https://otexts.com/fpp3/graphics-exercises.html')` 
+# 2.10 Exercises `r shiny::tags$a("2.10 Exercises",href='https://otexts.com/fpp3/graphics-exercises.html')` 
 
 
 ```{r}
@@ -286,7 +286,7 @@ dgoog <- gafa_stock %>%
 ```
 
 
-# 3.1 Transformations and adjustments `r shiny::tags$a(href='https://otexts.com/fpp3/transformations.html')` 
+# 3.1 Transformations and adjustments `r shiny::tags$a("3.1 Transformations and adjustments",href='https://otexts.com/fpp3/transformations.html')` 
 
 
 ```{r}
@@ -327,7 +327,7 @@ aus_production %>%
 
 
 ```
-# 3.2 Time series components `r shiny::tags$a(href='https://otexts.com/fpp3/components.html')` 
+# 3.2 Time series components `r shiny::tags$a("3.2 Time series components",href='https://otexts.com/fpp3/components.html')` 
 
 
 ```{r}
@@ -360,7 +360,7 @@ components(dcmp) %>%
 
 
 ```
-# 3.3 Moving averages `r shiny::tags$a(href='https://otexts.com/fpp3/moving-averages.html')` 
+# 3.3 Moving averages `r shiny::tags$a("3.3 Moving averages",href='https://otexts.com/fpp3/moving-averages.html')` 
 
 
 ```{r}
@@ -407,7 +407,7 @@ us_retail_employment_ma %>%
 
 
 ```
-# 3.4 Classical decomposition `r shiny::tags$a(href='https://otexts.com/fpp3/classical-decomposition.html')` 
+# 3.4 Classical decomposition `r shiny::tags$a("3.4 Classical decomposition",href='https://otexts.com/fpp3/classical-decomposition.html')` 
 
 
 ```{r}
@@ -424,7 +424,7 @@ us_retail_employment %>%
 
 
 ```
-# 3.5 Methods used by official statistics agencies `r shiny::tags$a(href='https://otexts.com/fpp3/methods-used-by-official-statistics-agencies.html')` 
+# 3.5 Methods used by official statistics agencies `r shiny::tags$a("3.5 Methods used by official statistics agencies",href='https://otexts.com/fpp3/methods-used-by-official-statistics-agencies.html')` 
 
 
 ```{r}
@@ -459,7 +459,7 @@ autoplot(seats_dcmp) +
 
 
 ```
-# 3.6 STL decomposition `r shiny::tags$a(href='https://otexts.com/fpp3/stl.html')` 
+# 3.6 STL decomposition `r shiny::tags$a("3.6 STL decomposition",href='https://otexts.com/fpp3/stl.html')` 
 
 
 ```{r}
@@ -475,7 +475,7 @@ us_retail_employment %>%
 
 
 ```
-# 3.7 Exercises `r shiny::tags$a(href='https://otexts.com/fpp3/decomposition-exercises.html')` 
+# 3.7 Exercises `r shiny::tags$a("3.7 Exercises",href='https://otexts.com/fpp3/decomposition-exercises.html')` 
 
 
 ```{r}
@@ -487,7 +487,7 @@ gas <- tail(aus_production, 5*4) %>% select(Gas)
 ```
 
 
-# 4.1 Some simple statistics `r shiny::tags$a(href='https://otexts.com/fpp3/some-simple-statistics.html')` 
+# 4.1 Some simple statistics `r shiny::tags$a("4.1 Some simple statistics",href='https://otexts.com/fpp3/some-simple-statistics.html')` 
 
 
 ```{r}
@@ -500,7 +500,7 @@ tourism %>% features(Trips, quantile)
 
 
 ```
-# 4.2 ACF features `r shiny::tags$a(href='https://otexts.com/fpp3/acf-features.html')` 
+# 4.2 ACF features `r shiny::tags$a("4.2 ACF features",href='https://otexts.com/fpp3/acf-features.html')` 
 
 
 ```{r}
@@ -510,7 +510,7 @@ tourism %>% features(Trips, feat_acf)
 
 
 ```
-# 4.3 STL Features `r shiny::tags$a(href='https://otexts.com/fpp3/stlfeatures.html')` 
+# 4.3 STL Features `r shiny::tags$a("4.3 STL Features",href='https://otexts.com/fpp3/stlfeatures.html')` 
 
 
 ```{r}
@@ -537,7 +537,7 @@ tourism %>%
 
 ```
 
-# 4.5 Exploring Australian tourism data `r shiny::tags$a(href='https://otexts.com/fpp3/exploring-australian-tourism-data.html')` 
+# 4.5 Exploring Australian tourism data `r shiny::tags$a("4.5 Exploring Australian tourism data",href='https://otexts.com/fpp3/exploring-australian-tourism-data.html')` 
 
 
 ```{r}
@@ -587,7 +587,7 @@ outliers %>%
 
 
 
-# 5.1 A tidy forecasting workflow `r shiny::tags$a(href='https://otexts.com/fpp3/a-tidy-forecasting-workflow.html')` 
+# 5.1 A tidy forecasting workflow `r shiny::tags$a("5.1 A tidy forecasting workflow",href='https://otexts.com/fpp3/a-tidy-forecasting-workflow.html')` 
 
 
 ```{r}
@@ -612,7 +612,7 @@ fit %>%
 
 
 ```
-# 5.2 Some simple forecasting methods `r shiny::tags$a(href='https://otexts.com/fpp3/simple-methods.html')` 
+# 5.2 Some simple forecasting methods `r shiny::tags$a("5.2 Some simple forecasting methods",href='https://otexts.com/fpp3/simple-methods.html')` 
 
 
 ```{r}
@@ -679,7 +679,7 @@ google_fc %>%
 
 
 ```
-# 5.3 Fitted values and residuals `r shiny::tags$a(href='https://otexts.com/fpp3/residuals.html')` 
+# 5.3 Fitted values and residuals `r shiny::tags$a("5.3 Fitted values and residuals",href='https://otexts.com/fpp3/residuals.html')` 
 
 
 ```{r}
@@ -689,7 +689,7 @@ augment(beer_fit)
 
 
 ```
-# 5.4 Residual diagnostics `r shiny::tags$a(href='https://otexts.com/fpp3/diagnostics.html')` 
+# 5.4 Residual diagnostics `r shiny::tags$a("5.4 Residual diagnostics",href='https://otexts.com/fpp3/diagnostics.html')` 
 
 
 ```{r}
@@ -724,7 +724,7 @@ augment(fit) %>% features(.innov, ljung_box, lag=10, dof=1)
 
 
 ```
-# 5.5 Distributional forecasts and prediction intervals `r shiny::tags$a(href='https://otexts.com/fpp3/prediction-intervals.html')` 
+# 5.5 Distributional forecasts and prediction intervals `r shiny::tags$a("5.5 Distributional forecasts and prediction intervals",href='https://otexts.com/fpp3/prediction-intervals.html')` 
 
 
 ```{r}
@@ -761,7 +761,7 @@ google_2015 %>%
 
 
 ```
-# 5.6 Forecasting using transformations `r shiny::tags$a(href='https://otexts.com/fpp3/ftransformations.html')` 
+# 5.6 Forecasting using transformations `r shiny::tags$a("5.6 Forecasting using transformations",href='https://otexts.com/fpp3/ftransformations.html')` 
 
 
 ```{r}
@@ -779,7 +779,7 @@ prices %>%
 
 
 ```
-# 5.7 Forecasting with decomposition `r shiny::tags$a(href='https://otexts.com/fpp3/forecasting-decomposition.html')` 
+# 5.7 Forecasting with decomposition `r shiny::tags$a("5.7 Forecasting with decomposition",href='https://otexts.com/fpp3/forecasting-decomposition.html')` 
 
 
 ```{r}
@@ -811,7 +811,7 @@ fit_dcmp %>% gg_tsresiduals()
 
 
 ```
-# 5.8 Evaluating point forecast accuracy `r shiny::tags$a(href='https://otexts.com/fpp3/accuracy.html')` 
+# 5.8 Evaluating point forecast accuracy `r shiny::tags$a("5.8 Evaluating point forecast accuracy",href='https://otexts.com/fpp3/accuracy.html')` 
 
 
 ```{r}
@@ -870,7 +870,7 @@ accuracy(google_fc, google_stock)
 
 
 ```
-# 5.9 Evaluating distributional forecast accuracy `r shiny::tags$a(href='https://otexts.com/fpp3/distaccuracy.html')` 
+# 5.9 Evaluating distributional forecast accuracy `r shiny::tags$a("5.9 Evaluating distributional forecast accuracy",href='https://otexts.com/fpp3/distaccuracy.html')` 
 
 
 ```{r}
@@ -895,7 +895,7 @@ google_fc %>%
 
 
 ```
-# 5.10 Time series cross-validation `r shiny::tags$a(href='https://otexts.com/fpp3/tscv.html')` 
+# 5.10 Time series cross-validation `r shiny::tags$a("5.10 Time series cross-validation",href='https://otexts.com/fpp3/tscv.html')` 
 
 
 ```{r}
@@ -931,7 +931,7 @@ fc %>%
 
 
 ```
-# 5.11 Exercises `r shiny::tags$a(href='https://otexts.com/fpp3/toolbox-exercises.html')` 
+# 5.11 Exercises `r shiny::tags$a("5.11 Exercises",href='https://otexts.com/fpp3/toolbox-exercises.html')` 
 
 
 ```{r}
@@ -972,7 +972,7 @@ fc %>% accuracy(myseries)
 
 
 
-# 7.1 The linear model `r shiny::tags$a(href='https://otexts.com/fpp3/regression-intro.html')` 
+# 7.1 The linear model `r shiny::tags$a("7.1 The linear model",href='https://otexts.com/fpp3/regression-intro.html')` 
 
 
 ```{r}
@@ -1004,7 +1004,7 @@ us_change %>%
 
 
 ```
-# 7.2 Least squares estimation `r shiny::tags$a(href='https://otexts.com/fpp3/least-squares.html')` 
+# 7.2 Least squares estimation `r shiny::tags$a("7.2 Least squares estimation",href='https://otexts.com/fpp3/least-squares.html')` 
 
 
 ```{r}
@@ -1035,7 +1035,7 @@ augment(fit_consMR) %>%
 
 
 ```
-# 7.3 Evaluating the regression model `r shiny::tags$a(href='https://otexts.com/fpp3/regression-evaluation.html')` 
+# 7.3 Evaluating the regression model `r shiny::tags$a("7.3 Evaluating the regression model",href='https://otexts.com/fpp3/regression-evaluation.html')` 
 
 
 ```{r}
@@ -1064,7 +1064,7 @@ fit %>% gg_tsresiduals()
 
 
 ```
-# 7.4 Some useful predictors `r shiny::tags$a(href='https://otexts.com/fpp3/useful-predictors.html')` 
+# 7.4 Some useful predictors `r shiny::tags$a("7.4 Some useful predictors",href='https://otexts.com/fpp3/useful-predictors.html')` 
 
 
 ```{r}
@@ -1103,7 +1103,7 @@ report(fourier_beer)
 
 
 ```
-# 7.5 Selecting predictors `r shiny::tags$a(href='https://otexts.com/fpp3/selecting-predictors.html')` 
+# 7.5 Selecting predictors `r shiny::tags$a("7.5 Selecting predictors",href='https://otexts.com/fpp3/selecting-predictors.html')` 
 
 
 ```{r}
@@ -1114,7 +1114,7 @@ glance(fit_consMR) %>%
 
 
 ```
-# 7.6 Forecasting with regression `r shiny::tags$a(href='https://otexts.com/fpp3/forecasting-regression.html')` 
+# 7.6 Forecasting with regression `r shiny::tags$a("7.6 Forecasting with regression",href='https://otexts.com/fpp3/forecasting-regression.html')` 
 
 
 ```{r}
@@ -1165,7 +1165,7 @@ us_change %>%
 
 
 ```
-# 7.7 Nonlinear regression `r shiny::tags$a(href='https://otexts.com/fpp3/nonlinear-regression.html')` 
+# 7.7 Nonlinear regression `r shiny::tags$a("7.7 Nonlinear regression",href='https://otexts.com/fpp3/nonlinear-regression.html')` 
 
 
 ```{r}
@@ -1195,7 +1195,7 @@ boston_men %>%
 ```
 
 
-# 7.10 Exercises `r shiny::tags$a(href='https://otexts.com/fpp3/regression-exercises.html')` 
+# 7.10 Exercises `r shiny::tags$a("7.10 Exercises",href='https://otexts.com/fpp3/regression-exercises.html')` 
 
 
 ```{r}
@@ -1220,7 +1220,7 @@ jan14_vic_elec %>%
 ```
 
 
-# 8.1 Simple exponential smoothing `r shiny::tags$a(href='https://otexts.com/fpp3/ses.html')` 
+# 8.1 Simple exponential smoothing `r shiny::tags$a("8.1 Simple exponential smoothing",href='https://otexts.com/fpp3/ses.html')` 
 
 
 ```{r}
@@ -1245,7 +1245,7 @@ fc %>%
 
 
 ```
-# 8.2 Methods with trend `r shiny::tags$a(href='https://otexts.com/fpp3/holt.html')` 
+# 8.2 Methods with trend `r shiny::tags$a("8.2 Methods with trend",href='https://otexts.com/fpp3/holt.html')` 
 
 
 ```{r}
@@ -1302,7 +1302,7 @@ fit %>%
 
 
 ```
-# 8.3 Methods with seasonality `r shiny::tags$a(href='https://otexts.com/fpp3/holt-winters.html')` 
+# 8.3 Methods with seasonality `r shiny::tags$a("8.3 Methods with seasonality",href='https://otexts.com/fpp3/holt-winters.html')` 
 
 
 ```{r}
@@ -1343,7 +1343,7 @@ sth_cross_ped %>%
 ```
 
 
-# 8.6 Estimation and model selection `r shiny::tags$a(href='https://otexts.com/fpp3/ets-estimation.html')` 
+# 8.6 Estimation and model selection `r shiny::tags$a("8.6 Estimation and model selection",href='https://otexts.com/fpp3/ets-estimation.html')` 
 
 
 ```{r}
@@ -1361,7 +1361,7 @@ components(fit) %>%
 
 
 ```
-# 8.7 Forecasting with ETS models `r shiny::tags$a(href='https://otexts.com/fpp3/ets-forecasting.html')` 
+# 8.7 Forecasting with ETS models `r shiny::tags$a("8.7 Forecasting with ETS models",href='https://otexts.com/fpp3/ets-forecasting.html')` 
 
 
 ```{r}
@@ -1378,7 +1378,7 @@ fit %>%
 
 
 
-# 9.1 Stationarity and differencing `r shiny::tags$a(href='https://otexts.com/fpp3/stationarity.html')` 
+# 9.1 Stationarity and differencing `r shiny::tags$a("9.1 Stationarity and differencing",href='https://otexts.com/fpp3/stationarity.html')` 
 
 
 ```{r}
@@ -1437,7 +1437,7 @@ aus_total_retail %>%
 
 
 
-# 9.5 Non-seasonal ARIMA models `r shiny::tags$a(href='https://otexts.com/fpp3/non-seasonal-arima.html')` 
+# 9.5 Non-seasonal ARIMA models `r shiny::tags$a("9.5 Non-seasonal ARIMA models",href='https://otexts.com/fpp3/non-seasonal-arima.html')` 
 
 
 ```{r}
@@ -1470,7 +1470,7 @@ report(fit2)
 
 ```
 
-# 9.7 ARIMA modelling in fable `r shiny::tags$a(href='https://otexts.com/fpp3/arima-r.html')` 
+# 9.7 ARIMA modelling in fable `r shiny::tags$a("9.7 ARIMA modelling in fable",href='https://otexts.com/fpp3/arima-r.html')` 
 
 
 ```{r}
@@ -1509,7 +1509,7 @@ gg_arma(caf_fit %>% select(Country, search))
 
 ```
 
-# 9.9 Seasonal ARIMA models `r shiny::tags$a(href='https://otexts.com/fpp3/seasonal-arima.html')` 
+# 9.9 Seasonal ARIMA models `r shiny::tags$a("9.9 Seasonal ARIMA models",href='https://otexts.com/fpp3/seasonal-arima.html')` 
 
 
 ```{r}
@@ -1575,7 +1575,7 @@ h02 %>%
 
 
 ```
-# 9.10 ARIMA vs ETS `r shiny::tags$a(href='https://otexts.com/fpp3/arima-ets.html')` 
+# 9.10 ARIMA vs ETS `r shiny::tags$a("9.10 ARIMA vs ETS",href='https://otexts.com/fpp3/arima-ets.html')` 
 
 
 ```{r}
@@ -1636,7 +1636,7 @@ cement %>%
 
 
 
-# 10.2 Regression with ARIMA errors using fable `r shiny::tags$a(href='https://otexts.com/fpp3/regarima.html')` 
+# 10.2 Regression with ARIMA errors using fable `r shiny::tags$a("10.2 Regression with ARIMA errors using fable",href='https://otexts.com/fpp3/regarima.html')` 
 
 
 ```{r}
@@ -1674,7 +1674,7 @@ augment(fit) %>%
 
 
 ```
-# 10.3 Forecasting `r shiny::tags$a(href='https://otexts.com/fpp3/forecasting.html')` 
+# 10.3 Forecasting `r shiny::tags$a("10.3 Forecasting",href='https://otexts.com/fpp3/forecasting.html')` 
 
 
 ```{r}
@@ -1732,7 +1732,7 @@ forecast(fit, vic_elec_future) %>%
 
 
 ```
-# 10.4 Stochastic and deterministic trends `r shiny::tags$a(href='https://otexts.com/fpp3/stochastic-and-deterministic-trends.html')` 
+# 10.4 Stochastic and deterministic trends `r shiny::tags$a("10.4 Stochastic and deterministic trends",href='https://otexts.com/fpp3/stochastic-and-deterministic-trends.html')` 
 
 
 ```{r}
@@ -1760,7 +1760,7 @@ aus_airpassengers %>%
 
 
 ```
-# 10.5 Dynamic harmonic regression `r shiny::tags$a(href='https://otexts.com/fpp3/dhr.html')` 
+# 10.5 Dynamic harmonic regression `r shiny::tags$a("10.5 Dynamic harmonic regression",href='https://otexts.com/fpp3/dhr.html')` 
 
 
 ```{r}
@@ -1797,7 +1797,7 @@ fit %>%
 
 
 ```
-# 10.6 Lagged predictors `r shiny::tags$a(href='https://otexts.com/fpp3/lagged-predictors.html')` 
+# 10.6 Lagged predictors `r shiny::tags$a("10.6 Lagged predictors",href='https://otexts.com/fpp3/lagged-predictors.html')` 
 
 
 ```{r}
@@ -1841,7 +1841,7 @@ fit_best %>%
 
 
 ```
-# 10.7 Exercises `r shiny::tags$a(href='https://otexts.com/fpp3/dynamic-exercises.html')` 
+# 10.7 Exercises `r shiny::tags$a("10.7 Exercises",href='https://otexts.com/fpp3/dynamic-exercises.html')` 
 
 
 ```{r}
@@ -1865,7 +1865,7 @@ vic_elec_daily <- vic_elec %>%
 ```
 
 
-# 11.1 Hierarchical and grouped time series `r shiny::tags$a(href='https://otexts.com/fpp3/hts.html')` 
+# 11.1 Hierarchical and grouped time series `r shiny::tags$a("11.1 Hierarchical and grouped time series",href='https://otexts.com/fpp3/hts.html')` 
 
 
 ```{r}
@@ -1921,7 +1921,7 @@ tourism_full <- tourism %>%
 
 
 ```
-# 11.2 Single level approaches `r shiny::tags$a(href='https://otexts.com/fpp3/single-level.html')` 
+# 11.2 Single level approaches `r shiny::tags$a("11.2 Single level approaches",href='https://otexts.com/fpp3/single-level.html')` 
 
 
 ```{r}
@@ -1951,7 +1951,7 @@ tourism_states %>%
 
 ```
 
-# 11.4 Forecasting Australian domestic tourism `r shiny::tags$a(href='https://otexts.com/fpp3/tourism.html')` 
+# 11.4 Forecasting Australian domestic tourism `r shiny::tags$a("11.4 Forecasting Australian domestic tourism",href='https://otexts.com/fpp3/tourism.html')` 
 
 
 ```{r}
@@ -1997,7 +1997,7 @@ fc %>%
 
 ```
 
-# 11.6 Forecasting Australian prison population `r shiny::tags$a(href='https://otexts.com/fpp3/prison.html')` 
+# 11.6 Forecasting Australian prison population `r shiny::tags$a("11.6 Forecasting Australian prison population",href='https://otexts.com/fpp3/prison.html')` 
 
 
 ```{r}
